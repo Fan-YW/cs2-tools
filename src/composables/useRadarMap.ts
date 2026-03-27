@@ -274,7 +274,7 @@ export function useRadarMap(
           const textWidth = ctx.measureText(text).width;
           ctx.fillStyle = "rgba(0, 0, 0, 0.6)";
           ctx.fillRect(x + 1, 2, textWidth + 2, 14);
-          ctx.strokeStyle = "rgba(230, 230, 230, 0.75)";
+          ctx.fillStyle = "rgba(230, 230, 230, 0.75)";
           ctx.fillText(text, x + 2, 14);
         }
       }
@@ -593,11 +593,13 @@ export function useRadarMap(
         redraw();
       }
     }
-    if (!leftDown && centerU.value != null && !fixed.value) {
+    if (!leftDown && !fixed.value) {
       const p = screenToUV(e.clientX, e.clientY);
       mouseU.value = p.u;
       mouseV.value = p.v;
-      updateReadouts();
+      if (centerU.value != null) {
+        updateReadouts();
+      }
       redraw();
     }
   }
@@ -734,5 +736,9 @@ export function useRadarMap(
     measureViewport,
     calcDamage,
     currentDistanceGame,
+    mouseU,
+    mouseV,
+    mapOriginJson,
+    scale,
   };
 }

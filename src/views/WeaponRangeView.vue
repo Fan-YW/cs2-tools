@@ -7,6 +7,7 @@ import {
 import { MAP_META_WEAPON, MAPS } from "@/lib/mapConstants";
 import WeaponDetailModal from "@/components/WeaponDetailModal.vue";
 import WeaponSelectorPanel from "@/components/WeaponSelectorPanel.vue";
+import MapScaleDisplay from "@/components/MapScaleDisplay.vue";
 import {
   buildWeaponColumnsById,
   loadWeaponsJson,
@@ -38,6 +39,10 @@ const {
   outDist,
   outDistM,
   distanceGame,
+  mouseU,
+  mouseV,
+  mapOriginJson,
+  scale,
 } = useRadarMap("weapon", MAP_META_WEAPON);
 
 const weaponsList = ref<WeaponRow[]>([]);
@@ -188,12 +193,15 @@ onMounted(async () => {
           >
         </div>
         <canvas ref="canvasRef" class="overlay-canvas" />
-        <div class="scale-hint">
-          {{ scaleHintText }}
-        </div>
-        <div class="scale-hint dist-hint">
-          {{ outDist }} <span class="muted">{{ t("radar.gameUnits") }}</span>{{ outDistM }}
-        </div>
+        <MapScaleDisplay
+          :scale-hint-text="scaleHintText"
+          :out-dist="outDist"
+          :out-dist-m="outDistM"
+          :mouse-u="mouseU"
+          :mouse-v="mouseV"
+          :map-origin="mapOriginJson"
+          :scale="scale"
+        />
       </div>
     </div>
     <aside class="panel rk-panel weapon-panel">
@@ -404,23 +412,5 @@ onMounted(async () => {
   pointer-events: none;
 }
 
-.scale-hint {
-  position: absolute;
-  left: 8px;
-  bottom: 8px;
-  font-size: 12px;
-  opacity: 0.85;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
-  pointer-events: none;
-  background-color: rgba(0, 0, 0, 0.7);
-  color: rgba(230, 230, 230, 0.9);
-  padding: 2px 4px;
-  border-radius: 2px;
-}
 
-.dist-hint {
-  left: auto;
-  right: 8px;
-  text-align: right;
-}
 </style>
