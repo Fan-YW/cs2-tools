@@ -1,4 +1,0 @@
-"scale" "5"
-"c4_base_damage" "650"
-"pos_x" "-2953"
-"pos_y" "2164"
