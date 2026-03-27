@@ -1,12 +1,11 @@
 {
   "nav": {
     "brand": "CS2 工具集",
-    "mapRange": "地图测距与 C4 伤害",
+    "mapRange": "C4爆炸伤害",
     "weaponRange": "武器距离伤害"
   },
   "home": {
-    "title": "CS2 工具集",
-    "footer": "Vue 3 + Vite + Reka UI · 静态构建可部署 GitHub Pages"
+    "title": "CS2 工具集"
   },
   "lang": {
     "zhShort": "中",
@@ -23,8 +22,8 @@
     "emDash": "—"
   },
   "radar": {
-    "scaleHint": "1px = {n} 游戏单位",
-    "gameUnits": "游戏单位",
+    "scaleHint": "1px = {n} 单位",
+    "gameUnits": "单位",
     "distMeters": "（{m} 米）",
     "metaMissingC4": "无法加载元数据：缺少 scale 或 c4_base_damage",
     "metaMissingScale": "无法加载元数据：缺少 scale",
@@ -34,8 +33,8 @@
     "metaMissingPosFetchWeapon": "元数据缺少 pos_x/pos_y：刻度将不绘制（测距仍可用）。",
     "metaFetchFailedC4": "无法加载元数据：未找到内联数据且 fetch 失败。请通过 HTTP 访问构建站点或补全内联元数据。",
     "metaFetchFailedWeapon": "无法加载元数据：请通过 HTTP 访问站点或补全内联 MAP_META。",
-    "outcomeDead": "HP:0(0)，护甲：0",
-    "outcomeLive": "HP:{hp}（{hpCeil}），护甲：{armor}"
+    "outcomeDead": "剩余HP：0 剩余护甲：0",
+    "outcomeLive": "剩余HP：{hp}({hpCeil}) 剩余护甲：{armor}"
   },
   "mapRange": {
     "mapLabel": "地图",

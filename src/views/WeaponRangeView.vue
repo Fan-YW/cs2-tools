@@ -197,7 +197,6 @@ onMounted(async () => {
       </div>
     </div>
     <aside class="panel rk-panel weapon-panel">
-      <label class="field-label">{{ t("weaponRange.mapLabel") }}</label>
       <SelectRoot v-model="mapId">
         <SelectTrigger class="rk-select-trigger" :aria-label="t('a11y.selectMap')">
           <SelectValue :placeholder="t('weaponRange.mapPlaceholder')">
@@ -413,6 +412,10 @@ onMounted(async () => {
   opacity: 0.85;
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
   pointer-events: none;
+  background-color: rgba(0, 0, 0, 0.7);
+  color: rgba(230, 230, 230, 0.9);
+  padding: 2px 4px;
+  border-radius: 2px;
 }
 
 .dist-hint {

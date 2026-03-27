@@ -12,7 +12,6 @@ import { publicUrl } from "@/lib/publicUrl";
 import {
   DRAG_THRESHOLD,
   IMAGE,
-  MM_PER_UNIT,
   type MapId,
   unitsToMeters,
 } from "@/lib/mapConstants";
@@ -271,7 +270,12 @@ export function useRadarMap(
         ctx.stroke();
 
         if (showLabel) {
-          ctx.fillText(String(Math.round(wx)), x + 2, 14);
+          const text = String(Math.round(wx));
+          const textWidth = ctx.measureText(text).width;
+          ctx.fillStyle = "rgba(0, 0, 0, 0.6)";
+          ctx.fillRect(x + 1, 2, textWidth + 2, 14);
+          ctx.strokeStyle = "rgba(230, 230, 230, 0.75)";
+          ctx.fillText(text, x + 2, 14);
         }
       }
     }
@@ -290,7 +294,12 @@ export function useRadarMap(
         ctx.stroke();
 
         if (showLabel) {
-          ctx.fillText(String(Math.round(wy)), 6, y - 2);
+          const text = String(Math.round(wy));
+          const textWidth = ctx.measureText(text).width;
+          ctx.fillStyle = "rgba(0, 0, 0, 0.6)";
+          ctx.fillRect(5, y - 14, textWidth + 2, 14);
+          ctx.fillStyle = "rgba(230, 230, 230, 0.75)";
+          ctx.fillText(text, 6, y - 2);
         }
       }
     }

@@ -1,12 +1,11 @@
 {
   "nav": {
     "brand": "CS2 Tools",
-    "mapRange": "Map range & C4 damage",
+    "mapRange": "C4 damage",
     "weaponRange": "Weapon range damage"
   },
   "home": {
-    "title": "CS2 Tools",
-    "footer": "Vue 3 + Vite + Reka UI · Static build, GitHub Pages ready"
+    "title": "CS2 Tools"
   },
   "lang": {
     "zhShort": "中",
@@ -23,8 +22,8 @@
     "emDash": "—"
   },
   "radar": {
-    "scaleHint": "1px = {n} game units",
-    "gameUnits": "game units",
+    "scaleHint": "1px = {n} units",
+    "gameUnits": " units",
     "distMeters": " ({m} m)",
     "metaMissingC4": "Cannot load map metadata: missing scale or c4_base_damage",
     "metaMissingScale": "Cannot load map metadata: missing scale",
@@ -34,8 +33,8 @@
     "metaMissingPosFetchWeapon": "Metadata is missing pos_x/pos_y: grid will not be drawn (ranging still works).",
     "metaFetchFailedC4": "Cannot load metadata: no embedded data and fetch failed. Open the site over HTTP or provide inline metadata.",
     "metaFetchFailedWeapon": "Cannot load metadata: open the site over HTTP or provide inline MAP_META.",
-    "outcomeDead": "HP:0(0), armor: 0",
-    "outcomeLive": "HP:{hp} ({hpCeil}), armor: {armor}"
+    "outcomeDead": "Remaining HP: 0  Remaining armor: 0",
+    "outcomeLive": "Remaining HP: {hp} ({hpCeil})  Remaining armor: {armor}"
   },
   "mapRange": {
     "mapLabel": "Map",

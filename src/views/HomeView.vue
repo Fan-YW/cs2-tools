@@ -17,9 +17,7 @@ const { t } = useI18n();
           {{ t("nav.weaponRange") }}
         </RouterLink>
       </nav>
-      <p class="home-muted">
-        {{ t("home.footer") }}
-      </p>
+
     </div>
   </div>
 </template>

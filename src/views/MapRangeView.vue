@@ -80,12 +80,11 @@ const curveOpen = ref(false);
           {{ scaleHintText }}
         </div>
         <div class="scale-hint dist-hint">
-          {{ outDist }} <span class="muted">{{ t("radar.gameUnits") }}</span>{{ outDistM }}
+          {{ outDist + t("radar.gameUnits") + outDistM }}
         </div>
       </div>
     </div>
     <aside class="panel rk-panel">
-      <label class="field-label">{{ t("mapRange.mapLabel") }}</label>
       <SelectRoot v-model="mapId">
         <SelectTrigger class="rk-select-trigger" :aria-label="t('a11y.selectMap')">
           <!-- 关闭下拉时 SelectItem 可能卸载，SelectValue 无法从 optionsSet 取文案，故用插槽直接显示当前值 -->
@@ -225,6 +224,10 @@ const curveOpen = ref(false);
   opacity: 0.85;
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
   pointer-events: none;
+  background-color: rgba(0, 0, 0, 0.7);
+  color: rgba(230, 230, 230, 0.9);
+  padding: 2px 4px;
+  border-radius: 2px;
 }
 
 .dist-hint {

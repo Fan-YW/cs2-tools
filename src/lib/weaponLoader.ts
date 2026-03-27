@@ -21,9 +21,9 @@ export type TranslateFn = (key: string, values?: Record<string, unknown>) => str
 
 const CATEGORY_I18N_KEYS: Record<string, string> = {
   pistol: "weapon.category.pistol",
-  smg: "weapon.category.smg",
+  submachinegun: "weapon.category.smg",
   rifle: "weapon.category.rifle",
-  sniper: "weapon.category.sniper",
+  sniperrifle: "weapon.category.sniper",
   shotgun: "weapon.category.shotgun",
   machinegun: "weapon.category.machinegun",
   heavy: "weapon.category.heavy",
