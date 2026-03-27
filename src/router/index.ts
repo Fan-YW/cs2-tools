@@ -14,7 +14,7 @@ export const router = createRouter({
 
 // Handle hash paths from 404 redirect
 router.beforeEach((to, from, next) => {
-  if (to.path === "/" && window.location.hash) {
+  if ((to.path === "/" || to.path === "/index.html") && window.location.hash) {
     const hashPath = window.location.hash.substring(1);
     if (hashPath) {
       next(hashPath);
