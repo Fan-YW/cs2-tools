@@ -1,0 +1,119 @@
+{
+  "nav": {
+    "brand": "CS2 Tools",
+    "mapRange": "Map range & C4 damage",
+    "weaponRange": "Weapon range damage"
+  },
+  "home": {
+    "title": "CS2 Tools",
+    "footer": "Vue 3 + Vite + Reka UI · Static build, GitHub Pages ready"
+  },
+  "lang": {
+    "zhShort": "中",
+    "enShort": "EN"
+  },
+  "a11y": {
+    "languageSwitch": "Toggle interface language (中文 / English)",
+    "mapViewport": "Map viewport",
+    "mapRadarAlt": "Map radar",
+    "selectMap": "Select map",
+    "weaponSelector": "Weapon selection"
+  },
+  "common": {
+    "emDash": "—"
+  },
+  "radar": {
+    "scaleHint": "1px = {n} game units",
+    "gameUnits": "game units",
+    "distMeters": " ({m} m)",
+    "metaMissingC4": "Cannot load map metadata: missing scale or c4_base_damage",
+    "metaMissingScale": "Cannot load map metadata: missing scale",
+    "metaMissingPosEmbeddedC4": "Embedded metadata is missing pos_x/pos_y: grid and coordinates will not be drawn.",
+    "metaMissingPosEmbeddedWeapon": "Embedded metadata is missing pos_x/pos_y: grid will not be drawn.",
+    "metaMissingPosFetchC4": "Metadata is missing pos_x/pos_y: grid and coordinates will not be drawn (ranging and damage still work).",
+    "metaMissingPosFetchWeapon": "Metadata is missing pos_x/pos_y: grid will not be drawn (ranging still works).",
+    "metaFetchFailedC4": "Cannot load metadata: no embedded data and fetch failed. Open the site over HTTP or provide inline metadata.",
+    "metaFetchFailedWeapon": "Cannot load metadata: open the site over HTTP or provide inline MAP_META.",
+    "outcomeDead": "HP:0(0), armor: 0",
+    "outcomeLive": "HP:{hp} ({hpCeil}), armor: {armor}"
+  },
+  "mapRange": {
+    "mapLabel": "Map",
+    "mapPlaceholder": "Select map",
+    "baseDamage": "Base damage",
+    "calcDamage": "Calculated damage",
+    "initialHp": "Initial HP ({n})",
+    "initialArmor": "Initial armor ({n})",
+    "help": "Scroll to zoom (hover viewport); drag with left button to pan; {click} bomb site and reference circle, move to measure, {click} again to fix; right-click to clear. Values in parentheses are converted distances (1 unit = 25.4 mm).",
+    "clickStrong": "<strong>Click</strong>"
+  },
+  "weaponRange": {
+    "mapLabel": "Map",
+    "mapPlaceholder": "Select map",
+    "pickOneWeapon": "Select at least one weapon.",
+    "tableWeapon": "Weapon",
+    "thHead": "Head",
+    "thChest": "Chest/arms",
+    "thAbd": "Abdomen",
+    "thLeg": "Legs",
+    "thHeadArmor": "Head (armor)",
+    "thChestArmor": "Chest/arms (armor)",
+    "thAbdArmor": "Abdomen (armor)",
+    "help": "Scroll to zoom; drag with left button to pan; {click} range start, move the mouse, {click} again to fix; right-click to clear. Range is a line segment (not a full circle).",
+    "clickStrong": "<strong>Click</strong>"
+  },
+  "weapon": {
+    "selectorTitle": "Weapons",
+    "bulkClear": "Clear {cat}",
+    "bulkAll": "All {cat}",
+    "category": {
+      "pistol": "pistols",
+      "smg": "SMGs",
+      "rifle": "rifles",
+      "sniper": "snipers",
+      "shotgun": "shotguns",
+      "machinegun": "machine guns",
+      "heavy": "heavies",
+      "other": "weapons"
+    },
+    "error": {
+      "loadFailed": "Failed to load weapon data: {msg}"
+    }
+  },
+  "weaponDetail": {
+    "modalDesc": "Static weapon stats from weapons.json",
+    "close": "Close",
+    "armorPen": "Armor penetration",
+    "baseDamage": "Base damage",
+    "rangeMod": "Range modifier",
+    "headMul": "Headshot multiplier",
+    "rpm": "Fire rate",
+    "killAward": "Kill reward",
+    "maxSpeed": "Max speed",
+    "walkSpeed": "Walk max speed",
+    "crouchSpeed": "Crouch max speed",
+    "standInacc": "Stand (accuracy / tap distance)",
+    "crouchInacc": "Crouch (accuracy / tap distance)",
+    "moveInacc": "Move (accuracy / tap distance)",
+    "clip": "Magazine",
+    "reserve": "Reserve ammo",
+    "price": "Price",
+    "maxRange": "Max range",
+    "weaponType": "Type",
+    "pellets": "Pellets",
+    "inaccuracyFmt": "Accuracy {rad} rad; tap distance {dist} m",
+    "reserveUnitClip": "mags",
+    "reserveUnitRound": "rounds"
+  },
+  "damageCurve": {
+    "showButton": "Show damage curve",
+    "title": "Damage curve",
+    "desc": "C4 damage vs distance, no armor and with armor (×0.5)",
+    "legendHint": "No armor: damage; with armor: damage × 0.5",
+    "close": "Close",
+    "axisDistance": "Distance",
+    "axisDamage": "Damage",
+    "legendNoArmor": "No armor",
+    "legendArmor": "With armor"
+  }
+}

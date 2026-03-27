@@ -1,0 +1,119 @@
+{
+  "nav": {
+    "brand": "CS2 工具集",
+    "mapRange": "地图测距与 C4 伤害",
+    "weaponRange": "武器距离伤害"
+  },
+  "home": {
+    "title": "CS2 工具集",
+    "footer": "Vue 3 + Vite + Reka UI · 静态构建可部署 GitHub Pages"
+  },
+  "lang": {
+    "zhShort": "中",
+    "enShort": "EN"
+  },
+  "a11y": {
+    "languageSwitch": "切换界面语言（中文 / English）",
+    "mapViewport": "地图视口",
+    "mapRadarAlt": "地图雷达",
+    "selectMap": "选择地图",
+    "weaponSelector": "武器选择"
+  },
+  "common": {
+    "emDash": "—"
+  },
+  "radar": {
+    "scaleHint": "1px = {n} 游戏单位",
+    "gameUnits": "游戏单位",
+    "distMeters": "（{m} 米）",
+    "metaMissingC4": "无法加载元数据：缺少 scale 或 c4_base_damage",
+    "metaMissingScale": "无法加载元数据：缺少 scale",
+    "metaMissingPosEmbeddedC4": "内置元数据缺少 pos_x/pos_y：刻度与坐标将不绘制。",
+    "metaMissingPosEmbeddedWeapon": "内置元数据缺少 pos_x/pos_y：刻度将不绘制。",
+    "metaMissingPosFetchC4": "元数据缺少 pos_x/pos_y：刻度与坐标将不绘制（仍可使用测距与伤害计算）。",
+    "metaMissingPosFetchWeapon": "元数据缺少 pos_x/pos_y：刻度将不绘制（测距仍可用）。",
+    "metaFetchFailedC4": "无法加载元数据：未找到内联数据且 fetch 失败。请通过 HTTP 访问构建站点或补全内联元数据。",
+    "metaFetchFailedWeapon": "无法加载元数据：请通过 HTTP 访问站点或补全内联 MAP_META。",
+    "outcomeDead": "HP:0(0)，护甲：0",
+    "outcomeLive": "HP:{hp}（{hpCeil}），护甲：{armor}"
+  },
+  "mapRange": {
+    "mapLabel": "地图",
+    "mapPlaceholder": "选择地图",
+    "baseDamage": "基本伤害",
+    "calcDamage": "计算伤害",
+    "initialHp": "初始 HP（{n}）",
+    "initialArmor": "初始护甲（{n}）",
+    "help": "滚轮缩放（悬停视口）；左键拖动平移；{click}落点与参考圆，移动鼠标测距，再次{click}固定；右键清除。括号内为换算距离，按 1 unit = 25.4 mm。",
+    "clickStrong": "<strong>单击</strong>"
+  },
+  "weaponRange": {
+    "mapLabel": "地图",
+    "mapPlaceholder": "选择地图",
+    "pickOneWeapon": "请选择至少一把武器。",
+    "tableWeapon": "武器",
+    "thHead": "头",
+    "thChest": "胸/手臂",
+    "thAbd": "腹",
+    "thLeg": "腿",
+    "thHeadArmor": "头（甲）",
+    "thChestArmor": "胸/手臂（甲）",
+    "thAbdArmor": "腹（甲）",
+    "help": "滚轮缩放；左键拖动平移；{click}测距起点，移动鼠标，再次{click}固定；右键清除。测距为线段（非整圆）。",
+    "clickStrong": "<strong>单击</strong>"
+  },
+  "weapon": {
+    "selectorTitle": "选择武器",
+    "bulkClear": "清除{cat}",
+    "bulkAll": "全选{cat}",
+    "category": {
+      "pistol": "手枪",
+      "smg": "冲锋枪",
+      "rifle": "步枪",
+      "sniper": "狙击枪",
+      "shotgun": "霰弹枪",
+      "machinegun": "机枪",
+      "heavy": "重型",
+      "other": "武器"
+    },
+    "error": {
+      "loadFailed": "武器数据加载失败：{msg}"
+    }
+  },
+  "weaponDetail": {
+    "modalDesc": "武器静态属性，来自 weapons.json",
+    "close": "关闭",
+    "armorPen": "护甲衰减",
+    "baseDamage": "基本伤害",
+    "rangeMod": "距离衰减",
+    "headMul": "爆头倍率",
+    "rpm": "射速",
+    "killAward": "击杀奖励",
+    "maxSpeed": "最大速度",
+    "walkSpeed": "静步最大速度",
+    "crouchSpeed": "蹲走最大速度",
+    "standInacc": "站立（精度/精确射击距离）",
+    "crouchInacc": "蹲（精度/精确射击距离）",
+    "moveInacc": "移动（精度/精确射击距离）",
+    "clip": "弹夹",
+    "reserve": "备弹",
+    "price": "武器价格",
+    "maxRange": "最远射击距离",
+    "weaponType": "类型",
+    "pellets": "霰弹数",
+    "inaccuracyFmt": "精度 {rad} rad；精确射击距离 {dist} m",
+    "reserveUnitClip": "弹夹",
+    "reserveUnitRound": "子弹"
+  },
+  "damageCurve": {
+    "showButton": "显示伤害曲线",
+    "title": "伤害曲线",
+    "desc": "C4 伤害随距离变化曲线，含无护甲与有护甲（×0.5）",
+    "legendHint": "无护甲：伤害；有护甲：伤害 × 0.5",
+    "close": "关闭",
+    "axisDistance": "距离",
+    "axisDamage": "伤害",
+    "legendNoArmor": "无护甲",
+    "legendArmor": "有护甲"
+  }
+}
