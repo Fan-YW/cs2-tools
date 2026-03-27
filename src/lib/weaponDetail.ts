@@ -37,16 +37,6 @@ function effectiveInaccuracy(inacc: number, spread: number): number {
   return inacc + spread;
 }
 
-function formatInaccuracyPair(inacc: number, t: TranslateFn): string {
-  if (!Number.isFinite(inacc) || inacc <= 0) return "—";
-  const rad = inacc / 1000;
-  const distM = 152.4 / inacc;
-  return t("weaponDetail.inaccuracyFmt", {
-    rad: fmtNum(rad, 5),
-    dist: fmtNum(distM, 2),
-  });
-}
-
 /**
  * 从 `weapons.json` 的 `columns` 生成详情模态中的「标签 / 值」行（与 OpenSpec 约定一致）。
  */
@@ -55,6 +45,12 @@ export function buildWeaponDetailRows(
   t: TranslateFn,
 ): WeaponDetailRow[] {
   const rows: WeaponDetailRow[] = [];
+
+  const wType = getColumn(columns, "WeaponType");
+  rows.push({
+    label: t("weaponDetail.weaponType"),
+    value: typeof wType === "string" && wType.trim() ? wType.trim() : "—",
+  });
 
   const armorRatio = numFrom(columns, ["WeaporArmorRatio", "WeaponArmor", "WeaponArmorRatio"]);
   if (Number.isFinite(armorRatio)) {
@@ -85,15 +81,21 @@ export function buildWeaponDetailRows(
   const cycle = numFrom(columns, "CycleTime");
   if (Number.isFinite(cycle) && cycle > 0) {
     const rpm = 60 / cycle;
-    rows.push({ label: t("weaponDetail.rpm"), value: `${fmtNum(rpm, 1)} rpm` });
+    rows.push({ label: t("weaponDetail.rpm"), value: `${fmtNum(rpm, 1)} rpm (${cycle} s)` });
   } else {
     rows.push({ label: t("weaponDetail.rpm"), value: "—" });
   }
 
+  const price = numFrom(columns, "WeaponPrice");
+  rows.push({
+    label: t("weaponDetail.price"),
+    value: Number.isFinite(price) ? `$ ${Math.round(price)}` : "—",
+  });
+
   const killAward = numFrom(columns, "KillAward");
   rows.push({
     label: t("weaponDetail.killAward"),
-    value: Number.isFinite(killAward) ? `$${Math.round(killAward)}` : "—",
+    value: Number.isFinite(killAward) ? `$ ${Math.round(killAward)}` : "—",
   });
 
   const maxSpd = numFrom(columns, "MaxPlayerSpeed");
@@ -108,24 +110,66 @@ export function buildWeaponDetailRows(
   }
 
   const spread = spreadComponent(columns);
+  const spreadAlt = numFrom(columns, "SpreadAlt");
 
   const standI = effectiveInaccuracy(numFrom(columns, "InaccuracyStand"), spread);
-  rows.push({
-    label: t("weaponDetail.standInacc"),
-    value: formatInaccuracyPair(standI, t),
-  });
+  if (Number.isFinite(standI) && standI > 0) {
+    const rad = standI / 1000;
+    const distM = 152.4 / standI;
+    rows.push({ label: t("weaponDetail.standInacc"), value: fmtNum(rad, 5) + ' rad'});
+    rows.push({ label: t("weaponDetail.standInaccDist"), value: fmtNum(distM, 2) + " m" });
+  } else {
+    rows.push({ label: t("weaponDetail.standInacc"), value: "—" });
+    rows.push({ label: t("weaponDetail.standInaccDist"), value: "—" });
+  }
 
   const crouchI = effectiveInaccuracy(numFrom(columns, "InaccuracyCrouch"), spread);
-  rows.push({
-    label: t("weaponDetail.crouchInacc"),
-    value: formatInaccuracyPair(crouchI, t),
-  });
+  if (Number.isFinite(crouchI) && crouchI > 0) {
+    const rad = crouchI / 1000;
+    const distM = 152.4 / crouchI;
+    rows.push({ label: t("weaponDetail.crouchInacc"), value: fmtNum(rad, 5) + ' rad'});
+    rows.push({ label: t("weaponDetail.crouchInaccDist"), value: fmtNum(distM, 2) + " m" });
+  } else {
+    rows.push({ label: t("weaponDetail.crouchInacc"), value: "—" });
+    rows.push({ label: t("weaponDetail.crouchInaccDist"), value: "—" });
+  }
 
   const moveI = effectiveInaccuracy(numFrom(columns, "InaccuracyMove"), spread);
-  rows.push({
-    label: t("weaponDetail.moveInacc"),
-    value: formatInaccuracyPair(moveI, t),
-  });
+  if (Number.isFinite(moveI) && moveI > 0) {
+    const rad = moveI / 1000;
+    const distM = 152.4 / moveI;
+    rows.push({ label: t("weaponDetail.moveInacc"), value: fmtNum(rad, 5) + ' rad'});
+    rows.push({ label: t("weaponDetail.moveInaccDist"), value: fmtNum(distM, 2) + " m" });
+  } else {
+    rows.push({ label: t("weaponDetail.moveInacc"), value: "—" });
+    rows.push({ label: t("weaponDetail.moveInaccDist"), value: "—" });
+  }
+
+  if (Number.isFinite(spreadAlt)) {
+    const crouchIAlt = effectiveInaccuracy(numFrom(columns, "InaccuracyCrouchAlt"), spreadAlt);
+    if (Number.isFinite(crouchIAlt) && crouchIAlt > 0) {
+      const rad = crouchIAlt / 1000;
+      const distM = 152.4 / crouchIAlt;
+      rows.push({ label: t("weaponDetail.crouchInacc") + "(Alt)", value: fmtNum(rad, 5) + ' rad'});
+      rows.push({ label: t("weaponDetail.crouchInaccDist") + "(Alt)", value: fmtNum(distM, 2) + " m" });
+    }
+
+    const standIAlt = effectiveInaccuracy(numFrom(columns, "InaccuracyStandAlt"), spreadAlt);
+    if (Number.isFinite(standIAlt) && standIAlt > 0) {
+      const rad = standIAlt / 1000;
+      const distM = 152.4 / standIAlt;
+      rows.push({ label: t("weaponDetail.standInacc") + "(Alt)", value: fmtNum(rad, 5) + ' rad'});
+      rows.push({ label: t("weaponDetail.standInaccDist") + "(Alt)", value: fmtNum(distM, 2) + " m" });
+    }
+
+    const moveIAlt = effectiveInaccuracy(numFrom(columns, "InaccuracyMoveAlt"), spreadAlt);
+    if (Number.isFinite(moveIAlt) && moveIAlt > 0) {
+      const rad = moveIAlt / 1000;
+      const distM = 152.4 / moveIAlt;
+      rows.push({ label: t("weaponDetail.moveInacc") + "(Alt)", value: fmtNum(rad, 5) + ' rad'});
+      rows.push({ label: t("weaponDetail.moveInaccDist") + "(Alt)", value: fmtNum(distM, 2) + " m" });
+    }
+  }
 
   const clip = numFrom(columns, ["clip_size", "Clip_size", "ClipSize"]);
   rows.push({
@@ -142,11 +186,6 @@ export function buildWeaponDetailRows(
     rows.push({ label: t("weaponDetail.reserve"), value: "—" });
   }
 
-  const price = numFrom(columns, "WeaponPrice");
-  rows.push({
-    label: t("weaponDetail.price"),
-    value: Number.isFinite(price) ? `$${Math.round(price)}` : "—",
-  });
 
   const range = numFrom(columns, "Range");
   rows.push({
@@ -154,11 +193,6 @@ export function buildWeaponDetailRows(
     value: Number.isFinite(range) ? String(Math.round(range)) : "—",
   });
 
-  const wType = getColumn(columns, "WeaponType");
-  rows.push({
-    label: t("weaponDetail.weaponType"),
-    value: typeof wType === "string" && wType.trim() ? wType.trim() : "—",
-  });
 
   const pellets = numFrom(columns, "Bullets");
   if (Number.isFinite(pellets) && pellets > 1) {

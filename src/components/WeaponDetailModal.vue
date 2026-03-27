@@ -24,6 +24,14 @@ const { t } = useI18n();
 const rows = computed(() =>
   props.columns ? buildWeaponDetailRows(props.columns, t) : [],
 );
+
+const rowGroups = computed(() => {
+  const groups = [];
+  for (let i = 0; i < rows.value.length; i += 2) {
+    groups.push(rows.value.slice(i, i + 2));
+  }
+  return groups;
+});
 </script>
 
 <template>
@@ -40,9 +48,11 @@ const rows = computed(() =>
           {{ t("weaponDetail.modalDesc") }}
         </DialogDescription>
         <dl class="detail-dl">
-          <template v-for="(r, i) in rows" :key="i">
-            <dt>{{ r.label }}</dt>
-            <dd>{{ r.value }}</dd>
+          <template v-for="(group, i) in rowGroups" :key="i">
+            <template v-for="(r, j) in group" :key="j">
+              <dt>{{ r.label }}</dt>
+              <dd>{{ r.value }}</dd>
+            </template>
           </template>
         </dl>
         <DialogClose as-child>
@@ -67,7 +77,7 @@ const rows = computed(() =>
 
 .detail-dl {
   display: grid;
-  grid-template-columns: minmax(7rem, auto) 1fr;
+  grid-template-columns: minmax(7rem, auto) 1fr minmax(7rem, auto) 1fr;
   gap: 0.35rem 1rem;
   margin: 0;
   font-size: 0.9rem;
@@ -103,7 +113,7 @@ const rows = computed(() =>
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
-  width: min(92vw, 420px);
+  width: min(80vw, 800px);
   max-height: 90vh;
   padding: 1.25rem;
   color: var(--rk-text);
