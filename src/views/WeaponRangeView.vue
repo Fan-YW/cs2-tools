@@ -318,6 +318,11 @@ onMounted(async () => {
   font-size: 0.9rem;
 }
 
+.weapon-panel {
+  max-height: calc(100vh - 56px - 2rem);
+  overflow-y: auto;
+}
+
 .weapon-table-wrap {
   overflow: auto;
   max-width: 100%;

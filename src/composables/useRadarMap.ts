@@ -59,7 +59,6 @@ export function useRadarMap(
   let startTx = 0;
   let startTy = 0;
   let longPressTimer: ReturnType<typeof setTimeout> | null = null;
-  let longPressFired = false;
   let defaultCursor = "crosshair";
 
   const metaErrKey = ref<string | null>(null);
@@ -616,7 +615,6 @@ export function useRadarMap(
       }
       leftDown = false;
       panning = false;
-      longPressFired = false;
       if (longPressTimer) window.clearTimeout(longPressTimer);
       longPressTimer = null;
       viewport.style.cursor = defaultCursor;
@@ -670,7 +668,6 @@ export function useRadarMap(
         e.preventDefault();
         leftDown = false;
         panning = false;
-        longPressFired = false;
         if (longPressTimer) window.clearTimeout(longPressTimer);
         longPressTimer = null;
         if (viewport) viewport.style.cursor = defaultCursor;
@@ -680,12 +677,10 @@ export function useRadarMap(
       viewport?.addEventListener("mousedown", (e) => {
         if (e.button !== 0) return;
         leftDown = true;
-        longPressFired = false;
         if (longPressTimer) window.clearTimeout(longPressTimer);
         longPressTimer = window.setTimeout(() => {
           if (leftDown && viewport) {
             viewport.style.cursor = "grab";
-            longPressFired = true;
           }
         }, LONG_PRESS_MS);
         if (viewport) viewport.style.cursor = defaultCursor;
