@@ -25,11 +25,14 @@ const englishChecked = computed({
         {{ t("nav.brand") }}
       </RouterLink>
       <nav class="shell-nav">
-        <RouterLink to="/map-range">
-          {{ t("nav.mapRange") }}
+        <RouterLink to="/weapon-data">
+          {{ t("nav.weaponData") }}
         </RouterLink>
         <RouterLink to="/weapon-range">
           {{ t("nav.weaponRange") }}
+        </RouterLink>
+        <RouterLink to="/map-range">
+          {{ t("nav.mapRange") }}
         </RouterLink>
       </nav>
       <div class="shell-lang">

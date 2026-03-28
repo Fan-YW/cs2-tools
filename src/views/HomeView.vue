@@ -10,11 +10,14 @@ const { t } = useI18n();
     <div class="home-card">
       <h1>{{ t("home.title") }}</h1>
       <nav class="tool-list">
-        <RouterLink to="/map-range" class="tool-link">
-          {{ t("nav.mapRange") }}
+        <RouterLink to="/weapon-data" class="tool-link">
+          {{ t("nav.weaponData") }}
         </RouterLink>
         <RouterLink to="/weapon-range" class="tool-link">
           {{ t("nav.weaponRange") }}
+        </RouterLink>
+        <RouterLink to="/map-range" class="tool-link">
+          {{ t("nav.mapRange") }}
         </RouterLink>
       </nav>
 

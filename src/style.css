@@ -221,6 +221,13 @@ a {
   overflow: hidden;
 }
 
+.weapon-data-page.app {
+  display: block;
+  padding: 0;
+  max-height: calc(100vh - 56px);
+  overflow: hidden;
+}
+
 .map-wrap {
   flex: 0 0 auto;
   width: min(100vh - 2rem - 56px, calc(100vw - 19rem));
