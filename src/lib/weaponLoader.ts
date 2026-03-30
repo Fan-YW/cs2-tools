@@ -133,42 +133,50 @@ export function normalizeWeaponsPayload(data: unknown): WeaponRow[] {
  */
 export function buildWeaponColumnsById(data: unknown): Map<string, Record<string, unknown>> {
   const map = new Map<string, Record<string, unknown>>();
-  const raw = Array.isArray(data) ? data : (data as { weapons?: unknown })?.weapons;
-  if (!Array.isArray(raw)) return map;
-  for (const w of raw) {
-    if (!w || typeof w !== "object") continue;
-    const o = w as Record<string, unknown>;
-    if (typeof o.id !== "string" || !o.id.trim()) continue;
-    const id = o.id.trim();
-    let damage: number;
-    let headMul: number;
-    let rangeMod: number;
-    let weaponArmor: number;
-    let bullets: number;
-    let range: number;
-    const cols = o.columns;
-    if (cols && typeof cols === "object") {
-      const c = cols as Record<string, unknown>;
-      damage = numFromColumns(c, "Damage");
-      headMul = numFromColumns(c, ["HeadshotMultiplier", "HeadShotMultiplier"]);
-      rangeMod = numFromColumns(c, "RangeModifier");
-      weaponArmor = numFromColumns(c, ["WeaporArmorRatio", "WeaponArmor", "WeaponArmorRatio"]);
-      bullets = numFromColumns(c, "Bullets");
-      range = numFromColumns(c, "Range");
-    } else {
-      damage = Number(o.damage);
-      headMul = Number(o.headMul);
-      rangeMod = Number(o.rangeMod);
-      weaponArmor = Number(o.weaponArmor);
-      bullets = Number(o.bullets);
-      range = Number(o.range);
+  try {
+    const raw = Array.isArray(data) ? data : (data as { weapons?: unknown })?.weapons;
+    if (!Array.isArray(raw)) return map;
+    for (const w of raw) {
+      if (!w || typeof w !== "object") continue;
+      const o = w as Record<string, unknown>;
+      if (typeof o.id !== "string" || !o.id.trim()) continue;
+      const id = o.id.trim();
+      let damage: number;
+      let headMul: number;
+      let rangeMod: number;
+      let weaponArmor: number;
+      let bullets: number;
+      let range: number;
+      const cols = o.columns;
+      if (cols && typeof cols === "object") {
+        const c = cols as Record<string, unknown>;
+        damage = numFromColumns(c, "Damage");
+        headMul = numFromColumns(c, ["HeadshotMultiplier", "HeadShotMultiplier"]);
+        rangeMod = numFromColumns(c, "RangeModifier");
+        weaponArmor = numFromColumns(c, ["WeaporArmorRatio", "WeaponArmor", "WeaponArmorRatio"]);
+        bullets = numFromColumns(c, "Bullets");
+        range = numFromColumns(c, "Range");
+      } else {
+        damage = Number(o.damage);
+        headMul = Number(o.headMul);
+        rangeMod = Number(o.rangeMod);
+        weaponArmor = Number(o.weaponArmor);
+        bullets = Number(o.bullets);
+        range = Number(o.range);
+      }
+      if (![damage, headMul, rangeMod, weaponArmor].every(Number.isFinite)) {
+        continue;
+      }
+      const c =
+        cols && typeof cols === "object" ? ({ ...(cols as Record<string, unknown>) } as Record<string, unknown>) : {};
+      // Add note field if it exists
+      if (o.note && typeof o.note === "object" && o.note !== null) {
+        c.note = o.note;
+      }
+      map.set(id, c);
     }
-    if (![damage, headMul, rangeMod, weaponArmor].every(Number.isFinite)) {
-      continue;
-    }
-    const c =
-      cols && typeof cols === "object" ? ({ ...(cols as Record<string, unknown>) } as Record<string, unknown>) : {};
-    map.set(id, c);
+  } catch (error) {
+    console.error("Error in buildWeaponColumnsById:", error);
   }
   return map;
 }

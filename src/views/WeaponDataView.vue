@@ -47,6 +47,28 @@ function effectiveInaccuracy(inacc: number, spread: number): number {
   return inacc + spread;
 }
 
+function getInaccuracyNote(note: Record<string, number> | undefined, type: 'stand' | 'crouch' | 'move'): string {
+  if (!note) return '';
+  
+  const decayKey = `Inaccuracy${type.charAt(0).toUpperCase() + type.slice(1)}Decay` as keyof typeof note;
+  const decayValue = note[decayKey];
+  
+  if (!Number.isFinite(decayValue)) return '';
+  
+  return `Due to inaccuracy decay when charging the best inaccuracy is: ${fmtNum(decayValue / 1000, 5)}`;
+}
+
+function getAccurateRangeNote(note: Record<string, number> | undefined, type: 'stand' | 'crouch' | 'move'): string {
+  if (!note) return '';
+  
+  const decayKey = `Inaccuracy${type.charAt(0).toUpperCase() + type.slice(1)}Decay` as keyof typeof note;
+  const decayValue = note[decayKey];
+  
+  if (!Number.isFinite(decayValue) || decayValue <= 0) return '';
+  
+  return `Due to inaccuracy decay when charging the best Accurate Range is: ${fmtNum(152.4 / decayValue, 2)}`;
+}
+
 interface TableWeapon {
   id: string;
   displayName: string;
@@ -79,11 +101,13 @@ interface TableWeapon {
   pellets: string;
   maxHeadRange: string;
   maxHeadArmorRange: string;
+  note?: Record<string, number>;
 }
 
 const tableData = computed((): TableWeapon[] => {
   return weaponsList.value.map((w) => {
     const cols = weaponColumnsById.value.get(w.id) ?? {};
+    const note = cols.note as Record<string, number> | undefined;
 
     const armorRatio = numFrom(cols, ["WeaporArmorRatio", "WeaponArmor", "WeaponArmorRatio"]);
     const armorPen = Number.isFinite(armorRatio) ? `${fmtNum((armorRatio / 2) * 100, 2)}%` : "—";
@@ -227,6 +251,7 @@ const tableData = computed((): TableWeapon[] => {
       pellets: pelletsStr,
       maxHeadRange,
       maxHeadArmorRange,
+      note
     };
   });
 });
@@ -278,17 +303,17 @@ onMounted(async () => {
                 <th>{{ t("weaponData.colWalkSpeed") }}</th>
                 <th>{{ t("weaponData.colCrouchSpeed") }}</th>
                 <th>{{ t("weaponData.colStandInacc") }}</th>
-                <th>{{ t("weaponData.colStandInaccDist") }}</th>
+                <th class="header-with-note" :title="t('weaponData.accDistNote')">{{ t("weaponData.colStandInaccDist") }}</th>
                 <th>{{ t("weaponData.colCrouchInacc") }}</th>
-                <th>{{ t("weaponData.colCrouchInaccDist") }}</th>
+                <th class="header-with-note" :title="t('weaponData.accDistNote')">{{ t("weaponData.colCrouchInaccDist") }}</th>
                 <th>{{ t("weaponData.colMoveInacc") }}</th>
-                <th>{{ t("weaponData.colMoveInaccDist") }}</th>
-                <th>{{ t("weaponData.colStandInaccAlt") }}</th>
-                <th>{{ t("weaponData.colStandInaccDistAlt") }}</th>
-                <th>{{ t("weaponData.colCrouchInaccAlt") }}</th>
-                <th>{{ t("weaponData.colCrouchInaccDistAlt") }}</th>
-                <th>{{ t("weaponData.colMoveInaccAlt") }}</th>
-                <th>{{ t("weaponData.colMoveInaccDistAlt") }}</th>
+                <th class="header-with-note" :title="t('weaponData.accDistNote')">{{ t("weaponData.colMoveInaccDist") }}</th>
+                <th class="header-with-note" :title="t('weaponData.altNote')">{{ t("weaponData.colStandInaccAlt") }}</th>
+                <th class="header-with-note" :title="t('weaponData.accDistNote') + ' ' + t('weaponData.altNote')">{{ t("weaponData.colStandInaccDistAlt") }}</th>
+                <th class="header-with-note" :title="t('weaponData.altNote')">{{ t("weaponData.colCrouchInaccAlt") }}</th>
+                <th class="header-with-note" :title="t('weaponData.accDistNote') + ' ' + t('weaponData.altNote')">{{ t("weaponData.colCrouchInaccDistAlt") }}</th>
+                <th class="header-with-note" :title="t('weaponData.altNote')">{{ t("weaponData.colMoveInaccAlt") }}</th>
+                <th class="header-with-note" :title="t('weaponData.accDistNote') + ' ' + t('weaponData.altNote')">{{ t("weaponData.colMoveInaccDistAlt") }}</th>
                 <th>{{ t("weaponData.colClip") }}</th>
                 <th>{{ t("weaponData.colReserve") }}</th>
                 <th>{{ t("weaponData.colMaxRange") }}</th>
@@ -311,12 +336,12 @@ onMounted(async () => {
                 <td>{{ weapon.maxSpeed }}</td>
                 <td>{{ weapon.walkSpeed }}</td>
                 <td>{{ weapon.crouchSpeed }}</td>
-                <td>{{ weapon.standInacc }}</td>
-                <td>{{ weapon.standInaccDist }}</td>
-                <td>{{ weapon.crouchInacc }}</td>
-                <td>{{ weapon.crouchInaccDist }}</td>
-                <td>{{ weapon.moveInacc }}</td>
-                <td>{{ weapon.moveInaccDist }}</td>
+                <td><span :class="{ 'comment-triangle': weapon.id === 'revolver' && weapon.note }" :title="weapon.id === 'revolver' ? getInaccuracyNote(weapon.note, 'stand') : ''">{{ weapon.standInacc }}</span></td>
+                <td><span :class="{ 'comment-triangle': weapon.id === 'revolver' && weapon.note }" :title="weapon.id === 'revolver' ? getAccurateRangeNote(weapon.note, 'stand') : ''">{{ weapon.standInaccDist }}</span></td>
+                <td><span :class="{ 'comment-triangle': weapon.id === 'revolver' && weapon.note }" :title="weapon.id === 'revolver' ? getInaccuracyNote(weapon.note, 'crouch') : ''">{{ weapon.crouchInacc }}</span></td>
+                <td><span :class="{ 'comment-triangle': weapon.id === 'revolver' && weapon.note }" :title="weapon.id === 'revolver' ? getAccurateRangeNote(weapon.note, 'crouch') : ''">{{ weapon.crouchInaccDist }}</span></td>
+                <td><span :class="{ 'comment-triangle': weapon.id === 'revolver' && weapon.note }" :title="weapon.id === 'revolver' ? getInaccuracyNote(weapon.note, 'move') : ''">{{ weapon.moveInacc }}</span></td>
+                <td><span :class="{ 'comment-triangle': weapon.id === 'revolver' && weapon.note }" :title="weapon.id === 'revolver' ? getAccurateRangeNote(weapon.note, 'move') : ''">{{ weapon.moveInaccDist }}</span></td>
                 <td>{{ weapon.standInaccAlt }}</td>
                 <td>{{ weapon.standInaccDistAlt }}</td>
                 <td>{{ weapon.crouchInaccAlt }}</td>
@@ -474,4 +499,38 @@ onMounted(async () => {
   background: var(--rk-bg);
   z-index: 1;
 }
+.comment-triangle {
+  position: relative;
+  display: inline;
+}
+
+.comment-triangle::after {
+  content: "";
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  width: 0;
+  height: 0;
+  border-left: 5px solid transparent;
+  border-bottom: 5px solid transparent;
+  border-top: 5px solid #dc2626;
+}
+
+.header-with-note {
+  position: relative;
+}
+
+.header-with-note::after {
+  content: "";
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  width: 0;
+  height: 0;
+  border-left: 5px solid transparent;
+  border-bottom: 5px solid transparent;
+  border-top: 5px solid #dc2626;
+}
+
+
 </style>

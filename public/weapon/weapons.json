@@ -124,6 +124,11 @@
         "CycleTimeAlt": 0.4,
         "cycletime_when_in_burst_mode": "",
         "time_between_burst_shots": ""
+      },
+      "note": {
+        "InaccuracyCrouchDecay": 3.47,
+        "InaccuracyStandDecay": 8.23,
+        "InaccuracyMoveDecay": 14.73
       }
     },
     {

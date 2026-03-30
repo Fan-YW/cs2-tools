@@ -3,6 +3,7 @@ import HomeView from "@/views/HomeView.vue";
 import MapRangeView from "@/views/MapRangeView.vue";
 import WeaponRangeView from "@/views/WeaponRangeView.vue";
 import WeaponDataView from "@/views/WeaponDataView.vue";
+import FallDamageView from "@/views/FallDamageView.vue";
 
 export const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -11,6 +12,7 @@ export const router = createRouter({
     { path: "/map-range", name: "map-range", component: MapRangeView },
     { path: "/weapon-range", name: "weapon-range", component: WeaponRangeView },
     { path: "/weapon-data", name: "weapon-data", component: WeaponDataView },
+    { path: "/fall-damage", name: "fall-damage", component: FallDamageView },
   ],
 });
 
