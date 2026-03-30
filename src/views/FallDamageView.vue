@@ -30,7 +30,7 @@ const fallSpeed = computed(() => {
   if (svGravity.value <= 0 || heightUnit.value <= 0) return '0.00';
   const h = heightUnit.value;
   const g = svGravity.value;
-  const v = Math.sqrt(2 * g * h);
+  const v = Math.min(Math.sqrt(2 * g * h), 3500);
   return v.toFixed(2);
 });
 
@@ -40,7 +40,9 @@ const ticks = computed(() => {
 });
 
 const tickSpeed = computed(() => {
-  return (svGravity.value * (ticks.value / serverTick.value)).toFixed(2);
+  const speed = svGravity.value * (ticks.value / serverTick.value);
+  const limitedSpeed = Math.min(speed, 3500);
+  return limitedSpeed.toFixed(2);
 });
 
 const damage = computed(() => {
@@ -81,7 +83,7 @@ const tableData = computed(() => {
 
     if (currentHeight > 8192) break;
 
-    const currentSpeed = gravity * currentTime;
+    const currentSpeed = Math.min(gravity * currentTime, 3500);
     const currentDamage = (currentSpeed - 580) / 4.2;
 
     data.push({
@@ -136,7 +138,7 @@ const chartData = computed(() => {
   while (true) {
     const currentTime = currentTicks / tickRate;
     const currentHeight = (gravity / 2) * Math.pow(currentTime, 2);
-    const currentSpeed = gravity * currentTime;
+    const currentSpeed = Math.min(gravity * currentTime, 3500);
     const currentDamage = Math.max(0, (currentSpeed - 580) / 4.2);
 
     if (currentHeight > 8192) break;
@@ -382,7 +384,7 @@ onUnmounted(() => {
         </div>
         <div class="result-group">
           <label>{{ t('fallDamage.landingSpeedTick') }}</label>
-          <span>{{ (svGravity * (ticks / serverTick)).toFixed(2) }} {{ t('fallDamage.unitPerSecond') }}</span>
+          <span>{{ tickSpeed }} {{ t('fallDamage.unitPerSecond') }}</span>
         </div>
         <div class="result-group">
           <label>{{ t('fallDamage.fallDamage') }}</label>
