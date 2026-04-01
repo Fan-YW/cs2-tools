@@ -2,13 +2,20 @@
 import { ref, computed, watch, nextTick, onUnmounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import * as echarts from 'echarts';
+import { runFallSimulation } from '@/lib/fallSimulation';
 
 const { t } = useI18n();
 
+type GameEdition = 'cs2' | 'go';
+type InitialAction = 'fall' | 'jump';
+
+const gameEdition = ref<GameEdition>('cs2');
+const goTickRate = ref(64);
+const subTickStep = ref(0);
+const initialAction = ref<InitialAction>('fall');
+
 const svGravity = ref(800);
 const heightUnit = ref(220);
-const serverTick = ref(64);
-const tableScrollRef = ref<HTMLElement | null>(null);
 const chartRef = ref<HTMLElement | null>(null);
 const showChart = ref(false);
 let chart: echarts.ECharts | null = null;
@@ -18,170 +25,144 @@ const heightMeters = computed(() => {
   return (heightUnit.value * 0.0254).toFixed(2);
 });
 
-const fallTime = computed(() => {
-  if (svGravity.value <= 0 || heightUnit.value <= 0) return '0.0000000';
-  const h = heightUnit.value;
-  const g = svGravity.value;
-  const t = Math.sqrt(2 * h / g);
-  return t.toFixed(7);
+const tickRate = computed(() => (gameEdition.value === 'cs2' ? 64 : goTickRate.value));
+
+const initTick = computed(() => {
+  if (gameEdition.value === 'go') return 0;
+  return (subTickStep.value / 65536) * 64;
 });
 
-const fallSpeed = computed(() => {
-  if (svGravity.value <= 0 || heightUnit.value <= 0) return '0.00';
-  const h = heightUnit.value;
-  const g = svGravity.value;
-  const v = Math.min(Math.sqrt(2 * g * h), 3500);
-  return v.toFixed(2);
+/** 与 INIT_TICK 一致：step/1024 tick；秒 = step/65536 */
+const subTickSliderCaption = computed(() => {
+  const step = subTickStep.value;
+  const sec = step / 65536;
+  const tickFrac = step / 1024;
+  return `${sec.toFixed(6)} s = ${tickFrac.toFixed(4)} tick`;
 });
 
-const ticks = computed(() => {
-  const time = parseFloat(fallTime.value);
-  return Math.floor(time * serverTick.value);
-});
+/**
+ * 跳跃初速计算：
+ * - CS2 或 CSGO 128tick: 302 - SV_GRAVITY/256
+ * - CSGO 64tick: 302 - SV_GRAVITY/128
+ */
 
-const tickSpeed = computed(() => {
-  const speed = svGravity.value * (ticks.value / serverTick.value);
-  const limitedSpeed = Math.min(speed, 3500);
-  return limitedSpeed.toFixed(2);
-});
-
-const damage = computed(() => {
-  const speed = parseFloat(tickSpeed.value);
-  const dmg = (speed - 580) / 4.2;
-  return Math.max(0, dmg).toFixed(3);
-});
-
-const tableData = computed(() => {
-  const data = [];
-  const gravity = svGravity.value;
-  const tickRate = serverTick.value;
-
-  if (gravity <= 0) return data;
-
-  // 计算最低受伤tick数
-  const timeToInjury = 580 / gravity;
-  const minTicks = Math.ceil(timeToInjury * tickRate);
-
-  // 第一行：0-最低受伤高度，伤害0
-  const firstHeight = (gravity / 2) * Math.pow(minTicks / tickRate, 2);
-  data.push({
-    heightRange: `0.000 - ${firstHeight.toFixed(3)}`,
-    ticks: '',
-    time: '',
-    speed: '',
-    damage: '0.000'
-  });
-
-  // 接下来的行，直到高度超过8192
-  let currentTicks = minTicks;
-  while (true) {
-    const currentTime = currentTicks / tickRate;
-    const currentHeight = (gravity / 2) * Math.pow(currentTime, 2);
-    const nextTicks = currentTicks + 1;
-    const nextTime = nextTicks / tickRate;
-    const nextHeight = (gravity / 2) * Math.pow(nextTime, 2);
-
-    if (currentHeight > 8192) break;
-
-    const currentSpeed = Math.min(gravity * currentTime, 3500);
-    const currentDamage = (currentSpeed - 580) / 4.2;
-
-    data.push({
-      heightRange: `${currentHeight.toFixed(3)} - ${nextHeight.toFixed(3)}`,
-      ticks: currentTicks.toString(),
-      time: currentTime.toFixed(7),
-      speed: currentSpeed.toFixed(2),
-      damage: Math.max(0, currentDamage).toFixed(3)
-    });
-
-    currentTicks = nextTicks;
+const initVelocity = computed(() => {
+  if (initialAction.value === 'fall') return 0;
+  if (gameEdition.value === 'cs2' || (gameEdition.value === 'go' && goTickRate.value === 128)) {
+    return -(302 - svGravity.value / 256);
   }
-
-  return data;
+  return -(302 - svGravity.value / 128);
 });
 
-// 判断是否应该高亮该行
-function shouldHighlightRow(index: number, item: any): boolean {
-  // 如果是第一行，且当前ticks小于第二行的ticks，则高亮
-  if (index === 0 && tableData.value.length > 1) {
-    const secondRowTicks = tableData.value[1].ticks;
-    if (secondRowTicks && ticks.value < parseInt(secondRowTicks)) {
-      return true;
+const simulation = computed(() =>
+  runFallSimulation({
+    tickRate: tickRate.value,
+    initTick: initTick.value,
+    initVelocity: initVelocity.value,
+    startHeightFloor: heightUnit.value,
+    svGravity: svGravity.value
+  })
+);
+
+const tableRows = computed(() => simulation.value.rows);
+
+/** `height_floor` 最大的一行（同值取最先出现） */
+const maxHeightFloorRowIndex = computed(() => {
+  const rows = tableRows.value;
+  if (!rows.length) return -1;
+  let idx = 0;
+  let max = rows[0].heightFloor;
+  for (let i = 1; i < rows.length; i++) {
+    if (rows[i].heightFloor > max) {
+      max = rows[i].heightFloor;
+      idx = i;
     }
   }
-  // 否则，当ticks与该行的ticks相同时高亮
-  return item.ticks === ticks.value.toString();
+  return idx;
+});
+
+const lastRow = computed(() => {
+  const r = tableRows.value;
+  return r.length ? r[r.length - 1] : null;
+});
+
+const landingDamageDisplay = computed(() => simulation.value.landingDamage.toFixed(3));
+
+const summaryLandingTimeTick = computed(() => {
+  const row = lastRow.value;
+  if (!row) return t('fallDamage.emptyDash');
+  const initT = initTick.value;
+  const rate = tickRate.value;
+  const initTime = initT / rate;
+  const deltaSec = row.time - initTime;
+  const deltaTick = row.currTick - initT;
+  const tickStr = Number(deltaTick.toFixed(6)).toString();
+  return `${deltaSec.toFixed(7)} ${t('fallDamage.seconds')} (${tickStr} ${t('fallDamage.ticks')})`;
+});
+
+const summaryLandingSpeedTick = computed(() => {
+  const row = lastRow.value;
+  if (!row) return t('fallDamage.emptyDash');
+  return `${row.velocityDisplay.toFixed(6)} ${t('fallDamage.unitPerSecond')}`;
+});
+
+const summaryLastTickHeightFloor = computed(() => {
+  const row = lastRow.value;
+  if (!row) return t('fallDamage.emptyDash');
+  return row.heightFloor.toFixed(6);
+});
+
+function formatRowTick(v: number) {
+  if (gameEdition.value === 'go') {
+    return String(Math.round(v));
+  }
+  return v.toFixed(6);
+}
+function formatRowTime(v: number) {
+  if (gameEdition.value === 'go') {
+    const decimals = goTickRate.value === 128 ? 7 : 6;
+    return v.toFixed(decimals);
+  }
+  return v.toFixed(6);
+}
+function formatRowVelocity(v: number) {
+  return v.toFixed(6);
+}
+function formatRowHeight(v: number) {
+  return v.toFixed(6);
 }
 
-// 生成图表数据
+/**
+ * Chart aligned with tick simulation: each table row → (height_floor, damage at displayed velocity).
+ * Not the legacy sqrt(2h/g) ladder.
+ */
 const chartData = computed(() => {
-  const data = [];
-  const gravity = svGravity.value;
-  const tickRate = serverTick.value;
-
-  if (gravity <= 0) return data;
-
-  // 计算最低受伤tick数
-  const timeToInjury = 580 / gravity;
-  const minTicks = Math.ceil(timeToInjury * tickRate);
-
-  // 从 0 开始，到第一个受伤点之前伤害都是0
-  const firstInjuryTime = minTicks / tickRate;
-  const firstInjuryHeight = (gravity / 2) * Math.pow(firstInjuryTime, 2);
-
-  // 添加起点 [0, 0]
-  data.push([0, 0]);
-
-  let currentTicks = minTicks;
-  let prevDamage = 0;
-
-  while (true) {
-    const currentTime = currentTicks / tickRate;
-    const currentHeight = (gravity / 2) * Math.pow(currentTime, 2);
-    const currentSpeed = Math.min(gravity * currentTime, 3500);
-    const currentDamage = Math.max(0, (currentSpeed - 580) / 4.2);
-
-    if (currentHeight > 8192) break;
-
-    // 模拟阶梯函数：在当前x减去微小值处生成一个点（使用上一个y值）
-    // 这样可以形成水平线，然后垂直上升到当前点
-    const epsilon = 0.000001;
-    if (currentHeight > epsilon && currentDamage !== prevDamage) {
-      data.push([currentHeight - epsilon, prevDamage]);
-    }
-    data.push([currentHeight, currentDamage]);
-
-    prevDamage = currentDamage;
-    currentTicks++;
+  const rows = tableRows.value;
+  if (!rows.length) return [];
+  const pts: [number, number][] = [];
+  for (const row of rows) {
+    const dmg = Math.max(0, (row.velocityDisplay - 580) / 4.2);
+    pts.push([row.heightFloor, dmg]);
   }
-
-  // 添加边界点，确保折线延伸到最大x值8192
-  const lastPoint = data[data.length - 1];
-  if (lastPoint && lastPoint[0] < 8192) {
-    data.push([8192, lastPoint[1]]);
-  }
-
-  return data;
+  pts.sort((a, b) => a[0] - b[0]);
+  return pts;
 });
 
-// 初始化图表
 function initChart() {
   if (!chartRef.value) return;
-  
+
   chart = echarts.init(chartRef.value);
-  
-  // 监听容器大小变化
+
   if (chartRef.value) {
     resizeObserver = new ResizeObserver(() => {
       chart?.resize();
     });
     resizeObserver.observe(chartRef.value);
   }
-  
+
   updateChart();
 }
 
-// 销毁图表
 function destroyChart() {
   if (chart) {
     chart.dispose();
@@ -193,21 +174,15 @@ function destroyChart() {
   }
 }
 
-// 更新图表
 function updateChart() {
   if (!chart) return;
-  
-  // 计算对应y范围0-100的x范围
-  let xMax = 0;
-  const gravity = svGravity.value;
-  if (gravity > 0) {
-    // 计算伤害达到100时的高度
-    const targetSpeed = 580 + 100 * 4.2;
-    const targetTime = targetSpeed / gravity;
-    xMax = (gravity / 2) * Math.pow(targetTime, 2);
+
+  const data = chartData.value;
+  let xMax = 8192;
+  if (data.length) {
+    xMax = Math.min(8192, Math.max(...data.map((p) => p[0]), 1));
   }
-  xMax = Math.min(xMax, 8192);
-  
+
   const option = {
     tooltip: {
       trigger: 'axis',
@@ -216,7 +191,7 @@ function updateChart() {
         axis: 'x',
         snap: false
       },
-      formatter: function(params: any) {
+      formatter: function (params: any) {
         return `${t('fallDamage.chartTooltipHeight')}: ${params[0].value[0].toFixed(2)}\n${t('fallDamage.chartTooltipDamage')}: ${params[0].value[1].toFixed(3)}`;
       }
     },
@@ -266,23 +241,24 @@ function updateChart() {
       nameGap: 40,
       min: 0
     },
-    series: [{
-      data: chartData.value,
-      type: 'line',
-      symbol: 'none',
-      lineStyle: {
-        width: 2
-      },
-      itemStyle: {
-        color: '#5470c6'
+    series: [
+      {
+        data: chartData.value,
+        type: 'line',
+        symbol: 'none',
+        lineStyle: {
+          width: 2
+        },
+        itemStyle: {
+          color: '#5470c6'
+        }
       }
-    }]
+    ]
   };
-  
+
   chart.setOption(option);
 }
 
-// 切换图表显示
 function toggleChart() {
   if (showChart.value) {
     destroyChart();
@@ -295,9 +271,8 @@ function toggleChart() {
   }
 }
 
-// 监听gravity变化，更新图表
 watch(
-  () => svGravity.value,
+  () => [svGravity.value, tickRate.value, initTick.value, initVelocity.value, heightUnit.value, gameEdition.value],
   () => {
     if (showChart.value) {
       updateChart();
@@ -305,40 +280,6 @@ watch(
   }
 );
 
-// 监听serverTick变化，更新图表
-watch(
-  () => serverTick.value,
-  () => {
-    if (showChart.value) {
-      updateChart();
-    }
-  }
-);
-
-// 监听ticks变化，将对应的行滚动到表格中心
-watch(
-  () => ticks.value,
-  async (newTicks) => {
-    await nextTick();
-    if (tableScrollRef.value) {
-      const highlightRow = tableScrollRef.value.querySelector('.highlight-row');
-      if (highlightRow) {
-        const scrollContainer = tableScrollRef.value;
-        const containerHeight = scrollContainer.clientHeight;
-        
-        // 使用scrollIntoView方法，更可靠地将元素滚动到视口中心
-        highlightRow.scrollIntoView({
-          behavior: 'smooth',
-          block: 'center',
-          inline: 'nearest'
-        });
-      }
-    }
-  },
-  { immediate: true }
-);
-
-// 组件卸载时清理
 onUnmounted(() => {
   destroyChart();
 });
@@ -349,18 +290,56 @@ onUnmounted(() => {
     <div class="layout-container">
       <div class="left-section">
         <div class="input-group tick-group">
-          <label>{{ t('fallDamage.serverTick') }}</label>
+          <label>{{ t('fallDamage.gameEdition') }}</label>
           <div class="tick-toggle">
             <button
-              :class="['tick-btn', { active: serverTick === 64 }]"
-              @click="serverTick = 64"
-            >64</button>
+              :class="['tick-btn', { active: gameEdition === 'cs2' }]"
+              type="button"
+              @click="gameEdition = 'cs2'"
+            >
+              CS2
+            </button>
             <button
-              :class="['tick-btn', { active: serverTick === 128 }]"
-              @click="serverTick = 128"
-            >128</button>
+              :class="['tick-btn', { active: gameEdition === 'go' }]"
+              type="button"
+              @click="gameEdition = 'go'"
+            >
+              CS:GO
+            </button>
           </div>
         </div>
+
+        <div class="input-group tick-group">
+          <label>{{ t('fallDamage.serverTick') }}</label>
+          <template v-if="gameEdition === 'cs2'">
+            <span class="tick-readonly">{{ t('fallDamage.tickMode64Sub') }}</span>
+          </template>
+          <div v-else class="tick-toggle">
+            <button
+              :class="['tick-btn', { active: goTickRate === 64 }]"
+              type="button"
+              @click="goTickRate = 64"
+            >
+              64
+            </button>
+            <button
+              :class="['tick-btn', { active: goTickRate === 128 }]"
+              type="button"
+              @click="goTickRate = 128"
+            >
+              128
+            </button>
+          </div>
+        </div>
+
+        <div v-if="gameEdition === 'cs2'" class="input-group slider-group">
+          <label>{{ t('fallDamage.subTickOffset') }}</label>
+          <div class="slider-row">
+            <input v-model.number="subTickStep" type="range" min="0" max="1023" step="1" class="subtick-slider" />
+            <span class="slider-meta">{{ subTickSliderCaption }}</span>
+          </div>
+        </div>
+
         <div class="input-group">
           <label>{{ t('fallDamage.svGravity') }}</label>
           <input type="number" v-model.number="svGravity" min="0" />
@@ -370,66 +349,86 @@ onUnmounted(() => {
           <input type="number" v-model.number="heightUnit" min="0" max="8192" />
           <span class="unit-display">{{ heightMeters }} {{ t('fallDamage.meters') }}</span>
         </div>
-        <div class="result-group">
-          <label>{{ t('fallDamage.landingTime') }}</label>
-          <span>{{ fallTime }} {{ t('fallDamage.seconds') }}</span>
+
+        <div class="input-group tick-group">
+          <label>{{ t('fallDamage.initialAction') }}</label>
+          <div class="tick-toggle">
+            <button
+              :class="['tick-btn', { active: initialAction === 'fall' }]"
+              type="button"
+              @click="initialAction = 'fall'"
+            >
+              {{ t('fallDamage.actionFall') }}
+            </button>
+            <button
+              :class="['tick-btn', { active: initialAction === 'jump' }]"
+              type="button"
+              @click="initialAction = 'jump'"
+            >
+              {{ t('fallDamage.actionJump') }}
+            </button>
+          </div>
         </div>
-        <div class="result-group">
-          <label>{{ t('fallDamage.landingSpeed') }}</label>
-          <span>{{ fallSpeed }} {{ t('fallDamage.unitPerSecond') }}</span>
-        </div>
+
         <div class="result-group">
           <label>{{ t('fallDamage.landingTimeTick') }}</label>
-          <span>{{ (ticks / serverTick).toFixed(7) }} {{ t('fallDamage.seconds') }} ({{ ticks }} ticks)</span>
+          <span>{{ summaryLandingTimeTick }}</span>
         </div>
         <div class="result-group">
           <label>{{ t('fallDamage.landingSpeedTick') }}</label>
-          <span>{{ tickSpeed }} {{ t('fallDamage.unitPerSecond') }}</span>
+          <span>{{ summaryLandingSpeedTick }}</span>
+        </div>
+        <div class="result-group">
+          <label>{{ t('fallDamage.lastTickHeightFloor') }}</label>
+          <span>{{ summaryLastTickHeightFloor }}</span>
         </div>
         <div class="result-group">
           <label>{{ t('fallDamage.fallDamage') }}</label>
-          <span>{{ damage }}</span>
+          <span>{{ landingDamageDisplay }}</span>
         </div>
         <div class="button-group">
-          <button @click="toggleChart" class="chart-button">
+          <button type="button" @click="toggleChart" class="chart-button">
             {{ t('fallDamage.showChart') }}
           </button>
         </div>
       </div>
       <div class="right-section">
         <div class="table-wrapper">
-          <div class="table-scroll" ref="tableScrollRef">
+          <div class="table-scroll">
             <table class="damage-table">
               <thead>
                 <tr>
-                  <th style="width: 25%;">{{ t('fallDamage.heightRange') }}</th>
-                  <th style="width: 15%;">{{ t('fallDamage.fallTimeTicks') }}</th>
-                  <th style="width: 20%;">{{ t('fallDamage.fallTimeSeconds') }}</th>
-                  <th style="width: 20%;">{{ t('fallDamage.landingSpeed') }}</th>
-                  <th style="width: 20%;">{{ t('fallDamage.fallDamage') }}</th>
+                  <th>{{ t('fallDamage.colTick') }}</th>
+                  <th>{{ t('fallDamage.colTime') }}</th>
+                  <th>{{ t('fallDamage.colVelocity') }}</th>
+                  <th>{{ t('fallDamage.colHeightStart') }}</th>
+                  <th>{{ t('fallDamage.colHeightFloor') }}</th>
                 </tr>
               </thead>
               <tbody>
-                <tr v-for="(item, index) in tableData" :key="index" :class="{ 'highlight-row': shouldHighlightRow(index, item) }">
-              <td>{{ item.heightRange }}</td>
-              <td>{{ item.ticks }}</td>
-              <td>{{ item.time }}</td>
-              <td>{{ item.speed }}</td>
-              <td>{{ item.damage }}</td>
-            </tr>
+                <tr
+                  v-for="(item, index) in tableRows"
+                  :key="index"
+                  :class="{ 'height-max-row': index === maxHeightFloorRowIndex }"
+                >
+                  <td>{{ formatRowTick(item.currTick) }}</td>
+                  <td>{{ formatRowTime(item.time) }}</td>
+                  <td>{{ formatRowVelocity(item.velocityDisplay) }}</td>
+                  <td>{{ formatRowHeight(item.heightStart) }}</td>
+                  <td>{{ formatRowHeight(item.heightFloor) }}</td>
+                </tr>
               </tbody>
             </table>
           </div>
         </div>
       </div>
     </div>
-    
-    <!-- 模态窗口 -->
+
     <div v-if="showChart" class="modal-overlay" @click="toggleChart">
       <div class="modal-content" @click.stop>
         <div class="modal-header">
           <h2>{{ t('fallDamage.chartTitle') }}</h2>
-          <button @click="toggleChart" class="close-button">×</button>
+          <button type="button" @click="toggleChart" class="close-button">×</button>
         </div>
         <div class="modal-body">
           <div ref="chartRef" class="chart"></div>
@@ -469,12 +468,40 @@ onUnmounted(() => {
   margin-top: 1rem;
 }
 
+.slider-group {
+  align-items: flex-start;
+  flex-wrap: wrap;
+}
+
+.slider-row {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  flex: 1;
+  min-width: 200px;
+}
+
+.subtick-slider {
+  width: 100%;
+  max-width: 320px;
+}
+
+.slider-meta {
+  font-size: 0.85rem;
+  color: #666;
+}
+
+.tick-readonly {
+  font-weight: 500;
+  color: #333;
+}
+
 label {
   font-weight: 500;
   min-width: 200px;
 }
 
-input {
+input[type='number'] {
   padding: 0.5rem;
   border: 1px solid #ccc;
   border-radius: 4px;
@@ -490,10 +517,15 @@ input {
   font-weight: 500;
   color: #333;
   min-width: 150px;
+  flex: 1;
 }
 
 .tick-group {
   margin-top: 0;
+}
+
+.tick-group:not(:first-child) {
+  margin-top: 1rem;
 }
 
 .tick-toggle {
@@ -519,7 +551,7 @@ input {
 }
 
 .tick-btn.active {
-  background-color: #4CAF50;
+  background-color: #4caf50;
   color: white;
 }
 
@@ -530,7 +562,7 @@ input {
 
 .chart-button {
   padding: 0.6rem 1.2rem;
-  background-color: #4CAF50;
+  background-color: #4caf50;
   color: white;
   border: none;
   border-radius: 4px;
@@ -543,7 +575,6 @@ input {
   background-color: #45a049;
 }
 
-/* 模态窗口样式 */
 .modal-overlay {
   position: fixed;
   top: 0;
@@ -623,7 +654,7 @@ input {
   display: flex;
   flex-direction: column;
   box-sizing: border-box;
-  height: calc(100vh - 180px); /* 根据浏览器窗口高度动态调整 */
+  height: calc(100vh - 180px);
 }
 
 .table-scroll {
@@ -662,7 +693,6 @@ input {
   position: sticky;
   top: 0;
   z-index: 2;
-  background: var(--rk-surface);
 }
 
 .damage-table th,
@@ -672,6 +702,7 @@ input {
   text-align: right;
   white-space: nowrap;
   background: var(--rk-bg);
+  font-variant-numeric: tabular-nums;
 }
 
 .damage-table tbody tr:nth-child(even) td {
@@ -682,8 +713,12 @@ input {
   background: #e3f2fd;
 }
 
-.damage-table tbody tr.highlight-row td {
-  background: #fff3cd !important;
+.damage-table tbody tr.height-max-row td {
+  background: #c8e6c9 !important;
+}
+
+.damage-table tbody tr.height-max-row:hover td {
+  background: #a5d6a7 !important;
 }
 
 h1 {
