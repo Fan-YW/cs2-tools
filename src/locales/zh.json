@@ -188,6 +188,7 @@
     "tickMode64Sub": "64 + sub tick",
     "subTickOffset": "sub tick offset",
     "initialAction": "初始动作",
+    "initialVelocity": "初始速度",
     "actionFall": "坠落",
     "actionJump": "跳",
     "colTick": "tick",

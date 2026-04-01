@@ -86,6 +86,59 @@ const lastRow = computed(() => {
   return r.length ? r[r.length - 1] : null;
 });
 
+const extendedTableRows = computed(() => {
+  const rows = [...tableRows.value];
+  if (!rows.length) return [];
+  
+  // 添加多一个tick的值，按照正常计算逻辑
+  const last = rows[rows.length - 1];
+  const tickIncrement = last.currTick - (rows.length > 1 ? rows[rows.length - 2].currTick : 0);
+  const nextTick = last.currTick + tickIncrement;
+  const nextTime = nextTick / tickRate.value;
+  
+  // 计算新的速度和位移
+  const INIT_TIME = initTick.value / tickRate.value;
+  const g = svGravity.value;
+  const initV = initVelocity.value;
+  
+  const nextVelocity = (nextTime - INIT_TIME) * g + initV;
+  const velocityDisplay = Math.min(nextVelocity, 3500); // 3500是速度上限
+  
+  // 计算位移
+  const dt = (nextTick - last.currTick) / tickRate.value;
+  let disp = 0;
+  const v0 = last.uncappedVelocity || last.velocityDisplay;
+  const v1 = nextVelocity;
+  
+  if (v0 >= 3500) {
+    disp = 3500 * dt;
+  } else if (v1 > 3500) {
+    const t1 = (3500 - v0) / g;
+    if (t1 > 0 && t1 < dt) {
+      disp = v0 * t1 + 0.5 * g * t1 * t1 + 3500 * (dt - t1);
+    } else {
+      disp = v0 * dt + 0.5 * g * dt * dt;
+    }
+  } else {
+    disp = v0 * dt + 0.5 * g * dt * dt;
+  }
+  
+  // 计算新的高度
+  const nextHeightStart = last.heightStart - disp;
+  const nextHeightFloor = last.heightFloor - disp;
+  
+  rows.push({
+    currTick: nextTick,
+    time: nextTime,
+    velocityDisplay,
+    uncappedVelocity: nextVelocity,
+    heightStart: nextHeightStart,
+    heightFloor: nextHeightFloor
+  });
+  
+  return rows;
+});
+
 const landingDamageDisplay = computed(() => simulation.value.landingDamage.toFixed(3));
 
 const summaryLandingTimeTick = computed(() => {
@@ -370,6 +423,11 @@ onUnmounted(() => {
           </div>
         </div>
 
+        <div v-if="initialAction === 'jump'" class="result-group">
+          <label>{{ t('fallDamage.initialVelocity') }}</label>
+          <span>{{ initVelocity !== undefined && initVelocity !== null ? initVelocity.toFixed(6) : '0.000000' }} {{ t('fallDamage.unitPerSecond') }}</span>
+        </div>
+
         <div class="result-group">
           <label>{{ t('fallDamage.landingTimeTick') }}</label>
           <span>{{ summaryLandingTimeTick }}</span>
@@ -407,9 +465,13 @@ onUnmounted(() => {
               </thead>
               <tbody>
                 <tr
-                  v-for="(item, index) in tableRows"
+                  v-for="(item, index) in extendedTableRows"
                   :key="index"
-                  :class="{ 'height-max-row': index === maxHeightFloorRowIndex }"
+                  :class="{
+                    'height-max-row': index === maxHeightFloorRowIndex,
+                    'last-row': index === tableRows.length - 1,
+                    'extended-row': index === extendedTableRows.length - 1
+                  }"
                 >
                   <td>{{ formatRowTick(item.currTick) }}</td>
                   <td>{{ formatRowTime(item.time) }}</td>
@@ -719,6 +781,19 @@ input[type='number'] {
 
 .damage-table tbody tr.height-max-row:hover td {
   background: #a5d6a7 !important;
+}
+
+.damage-table tbody tr.last-row td {
+  background: #ffcccc !important;
+  font-weight: bold;
+}
+
+.damage-table tbody tr.last-row:hover td {
+  background: #ffaaaa !important;
+}
+
+.damage-table tbody tr.extended-row td {
+  color: #999;
 }
 
 h1 {
