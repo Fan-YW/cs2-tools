@@ -29,14 +29,14 @@ const tickRate = computed(() => (gameEdition.value === 'cs2' ? 64 : goTickRate.v
 
 const initTick = computed(() => {
   if (gameEdition.value === 'go') return 0;
-  return (subTickStep.value / 65536) * 64;
+  return (subTickStep.value / 640000) * 64;
 });
 
-/** 与 INIT_TICK 一致：step/1024 tick；秒 = step/65536 */
+/** 与 INIT_TICK 一致：step/10000 tick；秒 = step/640000 */
 const subTickSliderCaption = computed(() => {
   const step = subTickStep.value;
-  const sec = step / 65536;
-  const tickFrac = step / 1024;
+  const sec = step / 640000;
+  const tickFrac = step / 10000;
   return `${sec.toFixed(6)} s = ${tickFrac.toFixed(4)} tick`;
 });
 
@@ -388,7 +388,7 @@ onUnmounted(() => {
         <div v-if="gameEdition === 'cs2'" class="input-group slider-group">
           <label>{{ t('fallDamage.subTickOffset') }}</label>
           <div class="slider-row">
-            <input v-model.number="subTickStep" type="range" min="0" max="1023" step="1" class="subtick-slider" />
+            <input v-model.number="subTickStep" type="range" min="0" max="9999" step="1" class="subtick-slider" />
             <span class="slider-meta">{{ subTickSliderCaption }}</span>
           </div>
         </div>
