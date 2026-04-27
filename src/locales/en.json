@@ -218,6 +218,8 @@
     "presetsPlaceholder": "Select preset",
     "presetsClear": "Clear preset",
     "presetDust2MiddleDoors": "Dust II - Middle Doors",
+    "presetInfernoBananaWoodPlank": "Inferno - Wood Plank",
+    "presetInfernoBananaPlaster": "Inferno - Plaster",
     "obstacleMaterial": "Obstacle material",
     "materialPlaceholder": "Select material",
     "thickness": "Obstacle thickness",
@@ -233,6 +235,7 @@
       "woodDense": "Dense Wood",
       "metal": "Metal",
       "brick": "Brick",
+      "plaster": "Plaster",
       "default": "Default"
     },
     "colWeapon": "Weapon",

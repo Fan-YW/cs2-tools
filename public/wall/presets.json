@@ -6,5 +6,21 @@
     "angleDeg": 0,
     "distToWall": 0,
     "enemyDistToWall": 0
+  },
+  {
+    "id": "infernoBananaWoodPlank",
+    "material": "woodPlank",
+    "thickness": 1,
+    "angleDeg": 0,
+    "distToWall": 0,
+    "enemyDistToWall": 0
+  },
+  {
+    "id": "infernoBananaPlaster",
+    "material": "plaster",
+    "thickness": 18.35,
+    "angleDeg": 0,
+    "distToWall": 0,
+    "enemyDistToWall": 0
   }
 ]

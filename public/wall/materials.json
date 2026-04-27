@@ -4,5 +4,6 @@
   { "id": "woodPlank", "penetration": 72 },
   { "id": "woodDense", "penetration": 12 },
   { "id": "metal", "penetration": 9 },
-  { "id": "brick", "penetration": 12 }
+  { "id": "brick", "penetration": 12 },
+  { "id": "plaster", "penetration": 12 }
 ]

@@ -218,6 +218,8 @@
     "presetsPlaceholder": "选择预设",
     "presetsClear": "清除预设",
     "presetDust2MiddleDoors": "炙热沙城II - 中门",
+    "presetInfernoBananaWoodPlank": "炼狱小镇 - 香蕉道木板",
+    "presetInfernoBananaPlaster": "炼狱小镇 - 香蕉道石板",
     "obstacleMaterial": "障碍物材质",
     "materialPlaceholder": "选择材质",
     "thickness": "障碍物厚度",
@@ -233,6 +235,7 @@
       "woodDense": "致密木板",
       "metal": "金属",
       "brick": "砖",
+      "plaster": "灰浆",
       "default": "默认"
     },
     "colWeapon": "武器名称",

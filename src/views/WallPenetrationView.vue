@@ -75,6 +75,10 @@ function fmt2(x: number | null | undefined) {
   return fmtFixed(x, 2);
 }
 
+function fmt3(x: number | null | undefined) {
+  return fmtFixed(x, 3);
+}
+
 function fmt1(x: number | null | undefined) {
   return fmtFixed(x, 1);
 }
@@ -185,7 +189,7 @@ const tableRows = computed(() => {
       cells: [
         fmtInt(w.damage),
         fmt2(R),
-        fmt2(w.headMul),
+        fmt3(w.headMul),
         fmtArmorPenPercent(w.weaponArmor),
         fmt1(wpnPen),
         fmt6(damageIn),
