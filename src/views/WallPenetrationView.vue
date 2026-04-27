@@ -83,8 +83,8 @@ function fmt1(x: number | null | undefined) {
   return fmtFixed(x, 1);
 }
 
-function fmt6(x: number | null | undefined) {
-  return fmtFixed(x, 6);
+function fmt4(x: number | null | undefined) {
+  return fmtFixed(x, 4);
 }
 
 /** WeaporArmorRatio：显示为 (当前值/2)×100%，两位小数 + % */
@@ -192,18 +192,18 @@ const tableRows = computed(() => {
         fmt3(w.headMul),
         fmtArmorPenPercent(w.weaponArmor),
         fmt1(wpnPen),
-        fmt6(damageIn),
-        fmt6(matAtten),
-        fmt6(totalAtten),
-        fmt6(damageOut),
-        fmt6(toChar),
-        fmt6(toChar),
-        fmt6(toChar * 1.25),
-        fmt6(toChar * w.headMul),
-        fmt6(toChar * 0.75),
-        fmt6(toChar * armMul),
-        fmt6(toChar * 1.25 * armMul),
-        fmt6(toChar * w.headMul * armMul),
+        fmt4(damageIn),
+        fmt4(matAtten),
+        fmt4(totalAtten),
+        fmt4(damageOut),
+        fmt4(toChar),
+        fmt4(toChar),
+        fmt4(toChar * 1.25),
+        fmt4(toChar * w.headMul),
+        fmt4(toChar * 0.75),
+        fmt4(toChar * armMul),
+        fmt4(toChar * 1.25 * armMul),
+        fmt4(toChar * w.headMul * armMul),
       ],
     });
   }
@@ -440,14 +440,14 @@ function clearPreset() {
         <p class="wall-pen-global-stat">
           <span class="wall-pen-global-stat-label">{{ t("wallPen.actualPenetrationDistance") }}</span>
           <span class="wall-pen-global-stat-value">{{
-            penetrationPathUnits != null ? fmt6(penetrationPathUnits) : t("common.emDash")
-          }}</span>
+              penetrationPathUnits != null ? fmt4(penetrationPathUnits) : t("common.emDash")
+            }}</span>
         </p>
         <p class="wall-pen-global-stat">
           <span class="wall-pen-global-stat-label">{{ t("wallPen.colThicknessAtten") }}</span>
           <span class="wall-pen-global-stat-value">{{
-            thicknessAttenShared != null ? fmt6(thicknessAttenShared) : t("common.emDash")
-          }}</span>
+              thicknessAttenShared != null ? fmt4(thicknessAttenShared) : t("common.emDash")
+            }}</span>
         </p>
       </div>
       <div class="weapon-table-wrap wall-pen-table-wrap">
