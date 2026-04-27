@@ -1,0 +1,10 @@
+[
+  {
+    "id": "dust2MiddleDoors",
+    "material": "woodDense",
+    "thickness": 8,
+    "angleDeg": 0,
+    "distToWall": 0,
+    "enemyDistToWall": 0
+  }
+]

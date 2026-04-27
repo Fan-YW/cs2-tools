@@ -22,6 +22,9 @@ const { t } = useI18n();
         <RouterLink to="/fall-damage" class="tool-link">
           {{ t("nav.fallDamage") }}
         </RouterLink>
+        <RouterLink to="/wall-penetration" class="tool-link">
+          {{ t("nav.wallPenetration") }}
+        </RouterLink>
       </nav>
 
     </div>

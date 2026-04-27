@@ -37,6 +37,9 @@ const englishChecked = computed({
         <RouterLink to="/fall-damage">
           {{ t("nav.fallDamage") }}
         </RouterLink>
+        <RouterLink to="/wall-penetration">
+          {{ t("nav.wallPenetration") }}
+        </RouterLink>
       </nav>
       <div class="shell-lang">
         <span

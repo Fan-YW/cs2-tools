@@ -4,7 +4,8 @@
     "mapRange": "C4爆炸伤害",
     "weaponRange": "武器距离伤害",
     "weaponData": "武器基本数据",
-    "fallDamage": "坠落伤害"
+    "fallDamage": "坠落伤害",
+    "wallPenetration": "穿墙衰减"
   },
   "home": {
     "title": "CS2 工具集"
@@ -210,5 +211,48 @@
     "chartRestore": "重置缩放",
     "chartSaveImage": "保存图片",
     "serverTick": "服务器 Tick"
+  },
+  "wallPen": {
+    "title": "穿墙衰减",
+    "presets": "预设",
+    "presetsPlaceholder": "选择预设",
+    "presetsClear": "清除预设",
+    "presetDust2MiddleDoors": "炙热沙城II - 中门",
+    "obstacleMaterial": "障碍物材质",
+    "materialPlaceholder": "选择材质",
+    "thickness": "障碍物厚度",
+    "thicknessHint": "（约 {cm} cm，1 unit = 2.54 cm）",
+    "shootAngle": "射击角度（°）",
+    "distToObstacle": "距障碍物距离",
+    "enemyDistToObstacle": "敌人距障碍物距离",
+    "distanceMetersHint": "（约 {m} m，1 unit = 0.0254 m）",
+    "actualPenetrationDistance": "实际穿透距离（厚度/cos角度）",
+    "material": {
+      "concrete": "混凝土",
+      "woodPlank": "木板",
+      "woodDense": "致密木板",
+      "metal": "金属",
+      "brick": "砖",
+      "default": "默认"
+    },
+    "colWeapon": "武器名称",
+    "colBaseDamage": "基本伤害",
+    "colRangeMod": "距离衰减",
+    "colHeadshotMul": "爆头倍率",
+    "colArmorPenetration": "护甲穿透",
+    "colWeaponPenetration": "武器穿透",
+    "colDamageEntering": "射入障碍物伤害",
+    "colMatAtten": "伤害衰减（材质）",
+    "colThicknessAtten": "伤害衰减（厚度）",
+    "colTotalAtten": "总衰减",
+    "colDamageExiting": "射出障碍物伤害",
+    "colCharDamage": "对人物伤害",
+    "colNoArmorBody": "无甲身体伤害",
+    "colNoArmorAbdomen": "无甲腹部伤害",
+    "colNoArmorHead": "无甲头部伤害",
+    "colLeg": "腿部伤害",
+    "colArmorBody": "有甲身体伤害",
+    "colArmorAbdomen": "有甲腹部伤害",
+    "colArmorHead": "有甲头部伤害"
   }
 }

@@ -4,7 +4,8 @@
     "mapRange": "C4 damage",
     "weaponRange": "Weapon range damage",
     "weaponData": "Weapon Data",
-    "fallDamage": "Fall Damage"
+    "fallDamage": "Fall Damage",
+    "wallPenetration": "Wall Penetration"
   },
   "home": {
     "title": "CS2 Tools"
@@ -210,5 +211,48 @@
     "chartRestore": "Restore",
     "chartSaveImage": "Save Image",
     "serverTick": "Server Tick"
+  },
+  "wallPen": {
+    "title": "Wall Penetration",
+    "presets": "Presets",
+    "presetsPlaceholder": "Select preset",
+    "presetsClear": "Clear preset",
+    "presetDust2MiddleDoors": "Dust II - Middle Doors",
+    "obstacleMaterial": "Obstacle material",
+    "materialPlaceholder": "Select material",
+    "thickness": "Obstacle thickness",
+    "thicknessHint": "(≈ {cm} cm; 1 unit = 2.54 cm)",
+    "shootAngle": "Impact angle (°)",
+    "distToObstacle": "Distance to obstacle",
+    "enemyDistToObstacle": "Enemy distance behind obstacle",
+    "distanceMetersHint": "(≈ {m} m; 1 unit = 0.0254 m)",
+    "actualPenetrationDistance": "Effective path (thickness / cos θ)",
+    "material": {
+      "concrete": "Concrete",
+      "woodPlank": "Wood Plank",
+      "woodDense": "Dense Wood",
+      "metal": "Metal",
+      "brick": "Brick",
+      "default": "Default"
+    },
+    "colWeapon": "Weapon",
+    "colBaseDamage": "Base damage",
+    "colRangeMod": "Range modifier",
+    "colHeadshotMul": "Headshot multiplier",
+    "colArmorPenetration": "Armor penetration",
+    "colWeaponPenetration": "Weapon penetration",
+    "colDamageEntering": "Damage entering obstacle",
+    "colMatAtten": "Damage loss (material)",
+    "colThicknessAtten": "Damage loss (thickness)",
+    "colTotalAtten": "Total loss",
+    "colDamageExiting": "Damage exiting obstacle",
+    "colCharDamage": "Damage to player",
+    "colNoArmorBody": "Body (no armor)",
+    "colNoArmorAbdomen": "Abdomen (no armor)",
+    "colNoArmorHead": "Head (no armor)",
+    "colLeg": "Leg damage",
+    "colArmorBody": "Body (with armor)",
+    "colArmorAbdomen": "Abdomen (with armor)",
+    "colArmorHead": "Head (with armor)"
   }
 }
