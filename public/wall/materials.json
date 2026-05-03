@@ -5,5 +5,5 @@
   { "id": "woodDense", "penetration": 12 },
   { "id": "metal", "penetration": 9 },
   { "id": "brick", "penetration": 12 },
-  { "id": "plaster", "penetration": 12 }
+  { "id": "plaster", "penetration": 16.8 }
 ]
