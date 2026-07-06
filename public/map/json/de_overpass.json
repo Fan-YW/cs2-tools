@@ -1,1 +1,33 @@
-{"id":"de_overpass","entries":[["scale","5.2"],["c4_base_damage","650"],["pos_x","-4831"],["pos_y","1781"]],"scale":5.2,"c4_base_damage":650,"pos_x":-4831,"pos_y":1781}
+{
+  "id": "de_overpass",
+  "scale": 5.2,
+  "pos_x": -4831,
+  "pos_y": 1781,
+  "landmarks": [
+    {
+      "type": "CTSpawn",
+      "label": "CT",
+      "x": 0.49,
+      "y": 0.2
+    },
+    {
+      "type": "TSpawn",
+      "label": "T",
+      "x": 0.66,
+      "y": 0.93
+    },
+    {
+      "type": "bombA",
+      "label": "A",
+      "x": 0.55,
+      "y": 0.23
+    },
+    {
+      "type": "bombB",
+      "label": "B",
+      "x": 0.7,
+      "y": 0.31
+    }
+  ],
+  "c4_base_damage": 650
+}

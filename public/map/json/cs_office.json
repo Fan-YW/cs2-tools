@@ -1,0 +1,50 @@
+{
+  "id": "cs_office",
+  "scale": 4.1,
+  "pos_x": -1838,
+  "pos_y": 1858,
+  "landmarks": [
+    {
+      "type": "CTSpawn",
+      "label": "CT",
+      "x": 0.16,
+      "y": 0.89
+    },
+    {
+      "type": "TSpawn",
+      "label": "T",
+      "x": 0.78,
+      "y": 0.3
+    },
+    {
+      "type": "Hostage1",
+      "label": "H",
+      "x": 0.84,
+      "y": 0.27
+    },
+    {
+      "type": "Hostage2",
+      "label": "H",
+      "x": 0.84,
+      "y": 0.48
+    },
+    {
+      "type": "Hostage3",
+      "label": "H",
+      "x": 0.91,
+      "y": 0.48
+    },
+    {
+      "type": "Hostage4",
+      "label": "H",
+      "x": 0.77,
+      "y": 0.48
+    },
+    {
+      "type": "Hostage5",
+      "label": "H",
+      "x": 0.77,
+      "y": 0.55
+    }
+  ]
+}

@@ -1,1 +1,33 @@
-{"id":"de_ancient","entries":[["scale","5"],["c4_base_damage","650"],["pos_x","-2953"],["pos_y","2164"]],"scale":5,"c4_base_damage":650,"pos_x":-2953,"pos_y":2164}
+{
+  "id": "de_ancient",
+  "scale": 5,
+  "pos_x": -2953,
+  "pos_y": 2164,
+  "landmarks": [
+    {
+      "type": "CTSpawn",
+      "label": "CT",
+      "x": 0.51,
+      "y": 0.17
+    },
+    {
+      "type": "TSpawn",
+      "label": "T",
+      "x": 0.485,
+      "y": 0.87
+    },
+    {
+      "type": "bombA",
+      "label": "A",
+      "x": 0.31,
+      "y": 0.25
+    },
+    {
+      "type": "bombB",
+      "label": "B",
+      "x": 0.8,
+      "y": 0.4
+    }
+  ],
+  "c4_base_damage": 650
+}

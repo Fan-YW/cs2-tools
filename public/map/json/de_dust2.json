@@ -1,1 +1,33 @@
-{"id":"de_dust2","entries":[["scale","4.4"],["c4_base_damage","700"],["pos_x","-2476"],["pos_y","3239"]],"scale":4.4,"c4_base_damage":700,"pos_x":-2476,"pos_y":3239}
+{
+  "id": "de_dust2",
+  "scale": 4.4,
+  "pos_x": -2476,
+  "pos_y": 3239,
+  "landmarks": [
+    {
+      "type": "CTSpawn",
+      "label": "CT",
+      "x": 0.62,
+      "y": 0.21
+    },
+    {
+      "type": "TSpawn",
+      "label": "T",
+      "x": 0.39,
+      "y": 0.91
+    },
+    {
+      "type": "bombA",
+      "label": "A",
+      "x": 0.8,
+      "y": 0.16
+    },
+    {
+      "type": "bombB",
+      "label": "B",
+      "x": 0.21,
+      "y": 0.12
+    }
+  ],
+  "c4_base_damage": 700
+}

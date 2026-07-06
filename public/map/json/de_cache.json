@@ -1,33 +1,33 @@
 {
-  "id": "de_nuke",
-  "scale": 7,
-  "pos_x": -3453,
-  "pos_y": 2887,
+  "id": "de_cache",
+  "scale": 5.5,
+  "pos_x": -2000,
+  "pos_y": 3250,
   "landmarks": [
     {
       "type": "CTSpawn",
       "label": "CT",
-      "x": 0.82,
-      "y": 0.45
+      "x": 0.09775,
+      "y": 0.473
     },
     {
       "type": "TSpawn",
       "label": "T",
-      "x": 0.19,
-      "y": 0.54
+      "x": 0.887,
+      "y": 0.585
     },
     {
       "type": "bombA",
       "label": "A",
-      "x": 0.58,
-      "y": 0.48
+      "x": 0.325,
+      "y": 0.26
     },
     {
       "type": "bombB",
       "label": "B",
-      "x": 0.58,
-      "y": 0.58
+      "x": 0.345,
+      "y": 0.79
     }
   ],
-  "c4_base_damage": 650
+  "c4_base_damage": 600
 }

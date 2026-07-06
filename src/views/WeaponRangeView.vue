@@ -4,7 +4,7 @@ import {
   calcWeaponRow,
   shouldHighlight,
 } from "@/lib/weaponDamageCore";
-import { MAP_META_WEAPON, MAPS } from "@/lib/mapConstants";
+import { MAP_META_WEAPON, MAPS_WEAPON } from "@/lib/mapConstants";
 import WeaponDetailModal from "@/components/WeaponDetailModal.vue";
 import WeaponSelectorPanel from "@/components/WeaponSelectorPanel.vue";
 import MapScaleDisplay from "@/components/MapScaleDisplay.vue";
@@ -33,6 +33,7 @@ const {
   panzoomRef,
   mapimgRef,
   canvasRef,
+  landmarksContainerRef,
   mapId,
   scaleHintText,
   metaErrKey,
@@ -43,7 +44,19 @@ const {
   mouseV,
   mapOriginJson,
   scale,
+  landmarks,
 } = useRadarMap("weapon", MAP_META_WEAPON);
+
+function getLandmarkColor(type: string): string {
+  if (type.startsWith("CTSpawn")) return "#B7D5EE";
+  if (type.startsWith("TSpawn")) return "#E7D48F";
+  if (type.startsWith("bomb")) return "#eab308";
+  return "#3b82f6";
+}
+
+function getLandmarkBgColor(): string {
+  return "#202020";
+}
 
 const weaponsList = ref<WeaponRow[]>([]);
 const weaponColumnsById = ref<Map<string, Record<string, unknown>>>(new Map());
@@ -191,6 +204,21 @@ onMounted(async () => {
             draggable="false"
             class="map-img"
           >
+          <div ref="landmarksContainerRef" class="landmarks-container">
+            <div
+              v-for="(lm, index) in landmarks"
+              :key="index"
+              class="landmark-label"
+              :style="{
+                left: `${lm.x * 100}%`,
+                top: `${lm.y * 100}%`,
+                backgroundColor: getLandmarkBgColor(),
+                color: getLandmarkColor(lm.type),
+              }"
+            >
+              {{ lm.label }}
+            </div>
+          </div>
         </div>
         <canvas ref="canvasRef" class="overlay-canvas" />
         <MapScaleDisplay
@@ -217,7 +245,7 @@ onMounted(async () => {
           <SelectContent class="rk-select-content" position="popper">
             <SelectViewport>
               <SelectItem
-                v-for="m in MAPS"
+                v-for="m in MAPS_WEAPON"
                 :key="m"
                 :value="m"
                 class="rk-select-item"
@@ -415,6 +443,23 @@ onMounted(async () => {
   width: 100%;
   height: 100%;
   pointer-events: none;
+}
+
+.landmarks-container {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.landmark-label {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  padding: 4px 10px;
+  border-radius: 4px;
+  font-weight: bold;
+  font-size: 14px;
+  white-space: nowrap;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
 }
 
 

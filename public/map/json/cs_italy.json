@@ -1,0 +1,44 @@
+{
+  "id": "cs_italy",
+  "scale": 4.6,
+  "pos_x": -2647,
+  "pos_y": 2592,
+  "landmarks": [
+    {
+      "type": "CTSpawn",
+      "label": "CT",
+      "x": 0.41,
+      "y": 0.91
+    },
+    {
+      "type": "TSpawn",
+      "label": "T",
+      "x": 0.6,
+      "y": 0.1
+    },
+    {
+      "type": "Hostage1",
+      "label": "H",
+      "x": 0.43,
+      "y": 0.29
+    },
+    {
+      "type": "Hostage2",
+      "label": "H",
+      "x": 0.48,
+      "y": 0.24
+    },
+    {
+      "type": "Hostage3",
+      "label": "H",
+      "x": 0.64,
+      "y": 0.03
+    },
+    {
+      "type": "Hostage4",
+      "label": "H",
+      "x": 0.72,
+      "y": 0.05
+    }
+  ]
+}

@@ -12,6 +12,7 @@ import { publicUrl } from "@/lib/publicUrl";
 import {
   DRAG_THRESHOLD,
   IMAGE,
+  type Landmark,
   type MapId,
   unitsToMeters,
 } from "@/lib/mapConstants";
@@ -22,8 +23,8 @@ const LONG_PRESS_MS = 260;
 
 type MapOrigin = { pos_x: number; pos_y: number };
 
-type EmbeddedC4 = { scale: number; c4_base_damage: number; pos_x: number; pos_y: number };
-type EmbeddedWeapon = { scale: number; pos_x: number; pos_y: number };
+type EmbeddedC4 = { scale: number; c4_base_damage: number; pos_x: number; pos_y: number; landmarks?: Landmark[] };
+type EmbeddedWeapon = { scale: number; pos_x: number; pos_y: number; landmarks?: Landmark[] };
 
 export function useRadarMap(
   variant: RadarVariant,
@@ -43,6 +44,8 @@ export function useRadarMap(
   const tx = ref(0);
   const ty = ref(0);
   const mapOriginJson = shallowRef<MapOrigin | null>(null);
+  const landmarks = ref<Landmark[]>([]);
+  const landmarksContainerRef = ref<HTMLElement | null>(null);
 
   const centerU = ref<number | null>(null);
   const centerV = ref<number | null>(null);
@@ -97,6 +100,12 @@ export function useRadarMap(
     pz.style.width = `${S.value * zoom.value}px`;
     pz.style.height = `${S.value * zoom.value}px`;
     pz.style.transform = `translate(${tx.value}px,${ty.value}px)`;
+
+    const container = landmarksContainerRef.value;
+    if (container) {
+      container.style.width = `${S.value * zoom.value}px`;
+      container.style.height = `${S.value * zoom.value}px`;
+    }
   }
 
   function screenToUV(clientX: number, clientY: number) {
@@ -315,6 +324,45 @@ export function useRadarMap(
     return (rGame / scale.value) * ((S.value * zoom.value) / IMAGE);
   }
 
+  function drawLandmarks(ctx: CanvasRenderingContext2D) {
+    if (landmarks.value.length === 0) return;
+
+    ctx.save();
+    ctx.font = "bold 18px system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif";
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+
+    for (const lm of landmarks.value) {
+      const screenX = tx.value + lm.x * S.value * zoom.value;
+      const screenY = ty.value + lm.y * S.value * zoom.value;
+
+      const text = lm.label;
+      const textWidth = ctx.measureText(text).width;
+      const padding = 6;
+      const rectWidth = textWidth + padding * 2;
+      const rectHeight = 24;
+
+      let textColor: string;
+      if (lm.type.startsWith("CTSpawn")) textColor = "#B7D5EE";
+      else if (lm.type.startsWith("TSpawn")) textColor = "#E7D48F";
+      else if (lm.type.startsWith("bomb")) textColor = "#ff0000";
+      else textColor = "#3b82f6";
+
+      ctx.fillStyle = "#202020";
+      ctx.fillRect(
+        screenX - rectWidth / 2,
+        screenY - rectHeight / 2,
+        rectWidth,
+        rectHeight
+      );
+
+      ctx.fillStyle = textColor;
+      ctx.fillText(text, screenX, screenY);
+    }
+
+    ctx.restore();
+  }
+
   function redraw() {
     const canvas = canvasRef.value;
     const ctx = canvas?.getContext("2d");
@@ -329,6 +377,7 @@ export function useRadarMap(
     ctx.clearRect(0, 0, S.value, S.value);
 
     drawWorldTicks(ctx);
+    drawLandmarks(ctx);
     if (centerU.value == null) return;
 
     const cx = tx.value + (centerU.value / IMAGE) * S.value * zoom.value;
@@ -425,6 +474,7 @@ export function useRadarMap(
       img.src = publicUrl(`map/png/${id}_radar_psd.png`);
     }
     mapOriginJson.value = null;
+    landmarks.value = [];
 
     const emb = embedded[id];
     if (emb) {
@@ -438,6 +488,9 @@ export function useRadarMap(
           mapOriginJson.value = null;
           metaErrKey.value = "radar.metaMissingPosEmbeddedC4";
         }
+        if (Array.isArray(e.landmarks)) {
+          landmarks.value = e.landmarks;
+        }
       } else {
         applyMapMetaWeapon(emb);
         const e = emb as EmbeddedWeapon;
@@ -447,6 +500,9 @@ export function useRadarMap(
         } else {
           mapOriginJson.value = null;
           metaErrKey.value = "radar.metaMissingPosEmbeddedWeapon";
+        }
+        if (Array.isArray(e.landmarks)) {
+          landmarks.value = e.landmarks;
         }
       }
       nextTick(redraw);
@@ -482,6 +538,17 @@ export function useRadarMap(
             metaErrKey.value = "radar.metaMissingPosFetchWeapon";
           }
         }
+
+        const lm = j.landmarks;
+        if (Array.isArray(lm)) {
+          landmarks.value = lm.map((item: Record<string, unknown>) => ({
+            type: String(item.type),
+            label: String(item.label),
+            x: Number(item.x),
+            y: Number(item.y),
+          }));
+        }
+
         nextTick(redraw);
       })
       .catch(() => {
@@ -713,6 +780,7 @@ export function useRadarMap(
     panzoomRef,
     mapimgRef,
     canvasRef,
+    landmarksContainerRef,
     mapId,
     S,
     scaleHintText,
@@ -727,6 +795,7 @@ export function useRadarMap(
     outcomeDead,
     distanceGame,
     baseDamage,
+    landmarks,
     redraw,
     measureViewport,
     calcDamage,

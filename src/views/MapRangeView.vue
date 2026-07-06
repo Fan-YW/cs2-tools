@@ -2,7 +2,7 @@
 import DamageCurveModal from "@/components/DamageCurveModal.vue";
 import MapScaleDisplay from "@/components/MapScaleDisplay.vue";
 import { useRadarMap } from "@/composables/useRadarMap";
-import { MAP_META_C4, MAPS } from "@/lib/mapConstants";
+import { MAP_META_C4, MAPS_C4 } from "@/lib/mapConstants";
 import {
   SelectContent,
   SelectItem,
@@ -26,6 +26,7 @@ const {
   panzoomRef,
   mapimgRef,
   canvasRef,
+  landmarksContainerRef,
   mapId,
   scaleHintText,
   metaErrKey,
@@ -43,7 +44,19 @@ const {
   mouseV,
   mapOriginJson,
   scale,
+  landmarks,
 } = useRadarMap("c4", MAP_META_C4);
+
+function getLandmarkColor(type: string): string {
+  if (type.startsWith("CTSpawn")) return "#B7D5EE";
+  if (type.startsWith("TSpawn")) return "#E7D48F";
+  if (type.startsWith("bomb")) return "#eab308";
+  return "#3b82f6";
+}
+
+function getLandmarkBgColor(): string {
+  return "#202020";
+}
 
 const hpSlider = computed({
   get: () => [hp.value],
@@ -71,16 +84,31 @@ const curveOpen = ref(false);
         :aria-label="t('a11y.mapViewport')"
       >
         <div ref="panzoomRef" class="panzoom">
-          <img
-            ref="mapimgRef"
-            :alt="t('a11y.mapRadarAlt')"
-            width="1024"
-            height="1024"
-            draggable="false"
-            class="map-img"
+        <img
+          ref="mapimgRef"
+          :alt="t('a11y.mapRadarAlt')"
+          width="1024"
+          height="1024"
+          draggable="false"
+          class="map-img"
+        >
+        <div ref="landmarksContainerRef" class="landmarks-container">
+          <div
+            v-for="(lm, index) in landmarks"
+            :key="index"
+            class="landmark-label"
+            :style="{
+              left: `${lm.x * 100}%`,
+              top: `${lm.y * 100}%`,
+              backgroundColor: getLandmarkBgColor(),
+              color: getLandmarkColor(lm.type),
+            }"
           >
+            {{ lm.label }}
+          </div>
         </div>
-        <canvas ref="canvasRef" class="overlay-canvas" />
+      </div>
+      <canvas ref="canvasRef" class="overlay-canvas" />
         <MapScaleDisplay
           :scale-hint-text="scaleHintText"
           :out-dist="outDist"
@@ -106,7 +134,7 @@ const curveOpen = ref(false);
           <SelectContent class="rk-select-content" position="popper">
             <SelectViewport>
               <SelectItem
-                v-for="m in MAPS"
+                v-for="m in MAPS_C4"
                 :key="m"
                 :value="m"
                 class="rk-select-item"
@@ -222,6 +250,23 @@ const curveOpen = ref(false);
   width: 100%;
   height: 100%;
   pointer-events: none;
+}
+
+.landmarks-container {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.landmark-label {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  padding: 4px 10px;
+  border-radius: 4px;
+  font-weight: bold;
+  font-size: 14px;
+  white-space: nowrap;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
 }
 
 

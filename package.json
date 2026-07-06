@@ -3,12 +3,13 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "vite",
-    "build": "vite build",
+    "dev": "npm run map:constants && vite",
+    "build": "npm run map:constants && vite build",
     "preview": "vite preview",
     "weapon:manifest": "node scripts/weapon-manifest.mjs",
     "weapon:json": "node scripts/weapon-xlsx-to-json.mjs",
     "weapon:data": "npm run weapon:manifest && npm run weapon:json",
+    "map:constants": "node scripts/gen-map-constants.mjs",
     "test:weapon-damage": "node --test tests/weapon-damage-core.test.cjs"
   },
   "devDependencies": {
