@@ -88,10 +88,10 @@ export const MAP_META_C4: Record<
     { type: "bombB", label: "B", x: 0.7, y: 0.31 }
   ] },
   de_train: { scale: 4.082077, c4_base_damage: 500, pos_x: -2308, pos_y: 2078, landmarks: [
-    { type: "CTSpawn", label: "CT", x: 0.86, y: 0.77 },
-    { type: "TSpawn", label: "T", x: 0.12, y: 0.25 },
-    { type: "bombA", label: "A", x: 0.63, y: 0.49 },
-    { type: "bombB", label: "B", x: 0.52, y: 0.76 }
+    { type: "CTSpawn", label: "CT", x: 0.89, y: 0.82 },
+    { type: "TSpawn", label: "T", x: 0.12, y: 0.18 },
+    { type: "bombA", label: "A", x: 0.65, y: 0.525 },
+    { type: "bombB", label: "B", x: 0.52, y: 0.81 }
   ] },
   de_vertigo: { scale: 4, c4_base_damage: 500, pos_x: -3168, pos_y: 1762, landmarks: [
     { type: "CTSpawn", label: "CT", x: 0.54, y: 0.25 },
@@ -168,10 +168,10 @@ export const MAP_META_WEAPON: Record<MapId, { scale: number; pos_x: number; pos_
     { type: "bombB", label: "B", x: 0.7, y: 0.31 }
   ] },
   de_train: { scale: 4.082077, pos_x: -2308, pos_y: 2078, landmarks: [
-    { type: "CTSpawn", label: "CT", x: 0.86, y: 0.77 },
-    { type: "TSpawn", label: "T", x: 0.12, y: 0.25 },
-    { type: "bombA", label: "A", x: 0.63, y: 0.49 },
-    { type: "bombB", label: "B", x: 0.52, y: 0.76 }
+    { type: "CTSpawn", label: "CT", x: 0.89, y: 0.82 },
+    { type: "TSpawn", label: "T", x: 0.12, y: 0.18 },
+    { type: "bombA", label: "A", x: 0.65, y: 0.525 },
+    { type: "bombB", label: "B", x: 0.52, y: 0.81 }
   ] },
   de_vertigo: { scale: 4, pos_x: -3168, pos_y: 1762, landmarks: [
     { type: "CTSpawn", label: "CT", x: 0.54, y: 0.25 },
